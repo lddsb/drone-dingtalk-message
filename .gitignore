@@ -1,0 +1,7 @@
+*
+!.gitignore
+!main.go
+!plugin.go
+!webhook.go
+!README.md
+!Dockerfile
