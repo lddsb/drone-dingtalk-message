@@ -1,7 +1,3 @@
-*
-!.gitignore
-!main.go
-!plugin.go
-!webhook.go
-!README.md
-!Dockerfile
+dive.log
+drone-dingtalk-message
+.idea
