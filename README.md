@@ -26,6 +26,43 @@ steps:
 
 ```
 
+### Plugin Parameter Reference
+`token`(required)
+
+String. Access token for group bot. (you can get the access token when you add a bot in a group)
+
+`type`(required)
+
+String. Message type, plan support text, markdown, link and action card, but due to time issue, it's only support `markdown` and `text` now, and you can get the best experience by use markdown.
+
+`message_color`(when `type=markdown`)
+
+Boolean value. This option can change the title and commit message color if turn on.
+
+`success_color`(when `message_color=true`)
+
+String. You can customize the color for the `build success` message by this option, you should input a hex color, example: `008000`.
+
+`failure_color`(when `message_color=true`)
+
+String. You can customize the color for the `build success` message by this option, you should input a hex color, example: `FF0000`.
+
+`sha_link`(when `type=markdown`)
+
+Boolean value. This option can link the sha to your source page when it turn on.
+
+`message_pic`(when `type=markdown`)
+
+Boolean value. If this option turn on,  it will embed a image into the message.
+
+`success_pic`(when `message_pic=true`)
+
+String. You can customize the picture for the `build success` message by this option.
+
+`failure_pic`(when `message_pic=true`)
+
+String. You can customize the picture for the `build failure` message by this option.
+
 ### Screen Shot
 - Send Success
 
@@ -39,13 +76,17 @@ steps:
 
 ![message-type-error](https://i.imgur.com/qtJ4DsA.jpg)
 
--  Markdown DingTalk Message
+- Markdown DingTalk Message(default)
 
-![markdown](https://i.imgur.com/LhenKf5.jpg)
+![markdown-message-default](https://i.imgur.com/Bl7cT1y.jpg)
 
-- Markdown DingTalk Message(beta tag)
+- Markdown DingTalk Message(color and sha link)
 
-![markdown-massage-beta-tag](https://i.imgur.com/zYuc8hc.jpg)
+![markdown-massage-customize](https://i.imgur.com/pzdFzIw.jpg)
+
+- Markdown DingTalk Message(color, pic and sha link)
+
+![markdown-massage-customize](https://i.imgur.com/xFrCTZp.jpg)
 
 ### Todo
 
