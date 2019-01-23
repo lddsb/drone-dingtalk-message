@@ -182,7 +182,7 @@ func (p *Plugin) markdownTpl() string {
 
 	// with pic
 	if p.Config.WithPic {
-		tpl += fmt.Sprintf("![%s](%s]\n\n",
+		tpl += fmt.Sprintf("![%s](%s)\n\n",
 			p.Build.Status,
 			p.getPicUrl())
 	}
