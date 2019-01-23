@@ -65,6 +65,10 @@ type (
 		Hostname string //  providers the Drone server hostname
 		Version  string //  providers the Drone server version
 	}
+	//  Drone CI Info
+	CI struct {
+		RepoLink string
+	}
 	//  plugin private config
 	Config struct {
 		AccessToken    string
@@ -81,9 +85,14 @@ type (
 		BtnOrientation bool
 		PicURL         string
 		MsgURL         string
+		SuccessPicUrl  string
+		FailurePicUrl  string
+		SuccessColor   string
+		FailureColor   string
 	}
 	// plugin all config
 	Plugin struct {
+		CI      CI
 		Git     Git
 		Runner  Runner
 		System  System
@@ -158,20 +167,25 @@ func (p *Plugin) baseTpl() string {
 	tpl := ""
 	switch strings.ToLower(p.Config.MsgType) {
 	case "markdown":
-		tpl = fmt.Sprintf(`# **%s** 
-### [%s](%s)
-##### %s (%s)
-##### @%s
-##### %s(%s)
-`,
+		tpl = fmt.Sprintf("# <font color=%s >%s *Branch Build %s*</font>\n"+
+			"![%s](%s)\n\n"+
+			"<font color=%s >%s</font>\n\n"+
+			"[%s](%s)\n\n"+
+			"`%s(%s)`\n\n"+
+			"[Build's Detail Click Me %s](%s)",
+			p.getColor(),
+			strings.Title(p.Commit.Branch),
 			strings.Title(p.Build.Status),
-			strings.TrimSpace(p.Commit.Message),
-			p.Build.Link,
-			p.Repo.FullName,
-			p.Commit.Branch,
+			p.Build.Status,
+			p.getPicUrl(),
+			p.getColor(),
+			p.Commit.Message,
 			p.Commit.Sha,
+			p.Commit.Link,
 			p.Commit.Authors.Name,
-			p.Commit.Authors.Email)
+			p.Commit.Authors.Email,
+			p.getEmoticon(),
+			p.Build.Link)
 	case "text":
 		tpl = fmt.Sprintf(`[%s] %s
 %s (%s)
@@ -192,8 +206,74 @@ func (p *Plugin) baseTpl() string {
 			p.Commit.Sha[:6],
 			p.Commit.Authors.Name,
 			p.Commit.Authors.Email)
+	case "actionCard":
+		//  coming soon
 
 	}
 
 	return tpl
+}
+
+/**
+get emoticon
+ */
+func (p *Plugin) getEmoticon() string {
+	emoticons := make(map[string]string)
+	emoticons["success"] = ":)"
+	emoticons["failure"] = ":("
+
+	emoticon, ok := emoticons[p.Build.Status]
+	if ok {
+		return emoticon
+	}
+
+	return ":("
+}
+
+/**
+get picture url
+ */
+func (p *Plugin) getPicUrl() string {
+	pics := make(map[string]string)
+	//  success picture url
+	pics["success"] = "https://ws4.sinaimg.cn/large/006tNc79gy1fz05g5a7utj30he0bfjry.jpg"
+	if p.Config.SuccessPicUrl != "" {
+		pics["success"] = p.Config.SuccessPicUrl
+	}
+	//  failure picture url
+	pics["failure"] = "https://ws1.sinaimg.cn/large/006tNc79gy1fz0b4fghpnj30hd0bdmxn.jpg"
+	if p.Config.FailurePicUrl != "" {
+		pics["failure"] = p.Config.FailurePicUrl
+	}
+
+	url, ok := pics[p.Build.Status]
+	if ok {
+		return url
+	}
+
+	return ""
+}
+
+/**
+get color for message title
+ */
+func (p *Plugin) getColor() string {
+	colors := make(map[string]string)
+	//  success color
+	colors["success"] = "#008000"
+	if p.Config.SuccessColor != "" {
+		colors["success"] = "#" + p.Config.SuccessColor
+	}
+	//  failure color
+	colors["failure"] = "#FF0000"
+	if p.Config.FailureColor != "" {
+		colors["failure"] = "#" + p.Config.FailureColor
+	}
+
+	color, ok := colors[p.Build.Status]
+	if ok {
+		return color
+	}
+
+	return ""
 }

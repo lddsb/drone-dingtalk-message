@@ -26,9 +26,9 @@ func main() {
 	app.Version = Version
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:   "config.token",
+			Name:   "config.token,access_token,token",
 			Usage:  "dingtalk webhook access token",
-			EnvVar: "PLUGIN_ACCESS_TOKEN",
+			EnvVar: "PLUGIN_ACCESS_TOKEN,PLUGIN_TOKEN",
 		},
 		cli.StringFlag{
 			Name:   "config.lang",
@@ -37,9 +37,9 @@ func main() {
 			EnvVar: "PLUGIN_LANG",
 		},
 		cli.StringFlag{
-			Name:   "config.message.type",
+			Name:   "config.message.type,msg_type,message_type,type",
 			Usage:  "dingtalk message type, like text, markdown, action card, link and feed card...",
-			EnvVar: "PLUGIN_MSG_TYPE",
+			EnvVar: "PLUGIN_MSG_TYPE,PLUGIN_TYPE,PLUGIN_MESSAGE_TYPE",
 		},
 		cli.StringFlag{
 			Name:   "config.message.at.all",
@@ -290,6 +290,31 @@ func main() {
 			Usage:  "job finished",
 			EnvVar: "DRONE_JOB_FINISHED",
 		},
+		cli.StringFlag{
+			Name:   "ci.repo.link",
+			Usage:  "ci repo link",
+			EnvVar: "CI_REPO_LINK",
+		},
+		cli.StringFlag{
+			Name:   "config.success.pic.url",
+			Usage:  "config success picture url",
+			EnvVar: "SUCCESS_PICTURE_URL",
+		},
+		cli.StringFlag{
+			Name:   "config.failure.pic.url",
+			Usage:  "config failure picture url",
+			EnvVar: "FAILURE_PICTURE_URL",
+		},
+		cli.StringFlag{
+			Name:   "config.success.color",
+			Usage:  "config success color for title in markdown",
+			EnvVar: "SUCCESS_COLOR",
+		},
+		cli.StringFlag{
+			Name:   "config.failure.color",
+			Usage:  "config failure color for title in markdown",
+			EnvVar: "FAILURE_COLOR",
+		},
 	}
 
 	if err := app.Run(os.Args); nil != err {
@@ -304,8 +329,8 @@ func run(c *cli.Context) {
 		//  repo info
 		Repo: Repo{
 			FullName: c.String("repo.fullname"),
-			Owner: c.String("repo.owner"),
-			Name:  c.String("repo.name"),
+			Owner:    c.String("repo.owner"),
+			Name:     c.String("repo.name"),
 		},
 		//  build info
 		Build: Build{
@@ -334,11 +359,18 @@ func run(c *cli.Context) {
 		},
 		//  custom config
 		Config: Config{
-			AccessToken: c.String("config.token"),
-			Lang:        c.String("config.lang"),
-			IsAtALL:     c.Bool("config.message.at.all"),
-			MsgType:     c.String("config.message.type"),
-			Mobiles:     c.String("config.message.at.mobiles"),
+			AccessToken:   c.String("config.token"),
+			Lang:          c.String("config.lang"),
+			IsAtALL:       c.Bool("config.message.at.all"),
+			MsgType:       c.String("config.message.type"),
+			Mobiles:       c.String("config.message.at.mobiles"),
+			SuccessPicUrl: c.String("config.success.pic.url"),
+			FailurePicUrl: c.String("config.failure.pic.url"),
+			SuccessColor:  c.String("config.success.color"),
+			FailureColor:  c.String("config.failure.color"),
+		},
+		CI: CI{
+			RepoLink: c.String("ci.repo.link"),
 		},
 	}
 
