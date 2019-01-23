@@ -27,19 +27,25 @@ steps:
 ```
 
 ### Screen Shot
-- Drone Build Step
+- Send Success
 
-![build-step](https://ws1.sinaimg.cn/large/006tNbRwgy1fym86hefglj30eo04i749.jpg)
+![send-success](https://i.imgur.com/cECppkW.jpg)
 
+- Missing Access Token
+
+![missing-access-token](https://i.imgur.com/Su7iiyw.jpg)
+
+- Missing Message Type Or Not Support Message Type
+
+![message-type-error](https://i.imgur.com/qtJ4DsA.jpg)
 
 -  Markdown DingTalk Message
 
-![markdown](https://ws3.sinaimg.cn/large/006tNbRwgy1fym82mg57fj30bo04pjrd.jpg)
-
+![markdown](https://i.imgur.com/LhenKf5.jpg)
 
 - Markdown DingTalk Message(beta tag)
 
-![markdown-massage-beta-tag](https://ws3.sinaimg.cn/large/006tNc79gy1fzgcennwy3j30a00abwf3.jpg)
+![markdown-massage-beta-tag](https://i.imgur.com/zYuc8hc.jpg)
 
 ### Todo
 
