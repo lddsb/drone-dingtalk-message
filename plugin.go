@@ -89,6 +89,9 @@ type (
 		FailurePicUrl  string
 		SuccessColor   string
 		FailureColor   string
+		WithColor      bool
+		WithPic        bool
+		LinkSha        bool
 	}
 	// plugin all config
 	Plugin struct {
@@ -163,29 +166,58 @@ func (p *Plugin) Exec() error {
 	return nil
 }
 
+func (p *Plugin) markdownTpl() string {
+	var tpl string
+
+	//  title
+	title := fmt.Sprintf(" %s *Branch Build %s*",
+		strings.Title(p.Commit.Branch),
+		strings.Title(p.Build.Status))
+	//  with color on title
+	if p.Config.WithColor {
+		title = fmt.Sprintf("<font color=%s>%s</font>", p.getColor(), title)
+	}
+
+	tpl = fmt.Sprintf("# %s \n", title)
+
+	// with pic
+	if p.Config.WithPic {
+		tpl += fmt.Sprintf("![%s](%s]\n\n",
+			p.Build.Status,
+			p.getPicUrl())
+	}
+
+	//  commit message
+	commitMsg := fmt.Sprintf("%s", p.Commit.Message)
+	if p.Config.WithColor {
+		commitMsg = fmt.Sprintf("<font color=%s>%s</font>", p.getColor(), commitMsg)
+	}
+	tpl += commitMsg + "\n\n"
+
+	//  sha info
+	commitSha := p.Commit.Sha
+	if p.Config.LinkSha {
+		commitSha = fmt.Sprintf("[Click To %s Commit Detail Page](%s)", commitSha[:6], p.Commit.Link)
+	}
+	tpl += commitSha + "\n\n"
+
+	//  author info
+	authorInfo := fmt.Sprintf("`%s(%s)`", p.Commit.Authors.Name, p.Commit.Authors.Email)
+	tpl += authorInfo + "\n\n"
+
+	//  build detail link
+	buildDetail := fmt.Sprintf("[Click To The Build Detail Page %s](%s)",
+		p.getEmoticon(),
+		p.Build.Link)
+	tpl += buildDetail
+	return tpl
+}
+
 func (p *Plugin) baseTpl() string {
 	tpl := ""
 	switch strings.ToLower(p.Config.MsgType) {
 	case "markdown":
-		tpl = fmt.Sprintf("# <font color=%s >%s *Branch Build %s*</font>\n"+
-			"![%s](%s)\n\n"+
-			"<font color=%s >%s</font>\n\n"+
-			"[%s](%s)\n\n"+
-			"`%s(%s)`\n\n"+
-			"[Build's Detail Click Me %s](%s)",
-			p.getColor(),
-			strings.Title(p.Commit.Branch),
-			strings.Title(p.Build.Status),
-			p.Build.Status,
-			p.getPicUrl(),
-			p.getColor(),
-			p.Commit.Message,
-			p.Commit.Sha,
-			p.Commit.Link,
-			p.Commit.Authors.Name,
-			p.Commit.Authors.Email,
-			p.getEmoticon(),
-			p.Build.Link)
+		tpl = p.markdownTpl()
 	case "text":
 		tpl = fmt.Sprintf(`[%s] %s
 %s (%s)

@@ -298,22 +298,37 @@ func main() {
 		cli.StringFlag{
 			Name:   "config.success.pic.url",
 			Usage:  "config success picture url",
-			EnvVar: "SUCCESS_PICTURE_URL",
+			EnvVar: "SUCCESS_PICTURE_URL,PLUGIN_SUCCESS_PIC",
 		},
 		cli.StringFlag{
 			Name:   "config.failure.pic.url",
 			Usage:  "config failure picture url",
-			EnvVar: "FAILURE_PICTURE_URL",
+			EnvVar: "FAILURE_PICTURE_URL,PLUGIN_FAILURE_PIC",
 		},
 		cli.StringFlag{
 			Name:   "config.success.color",
 			Usage:  "config success color for title in markdown",
-			EnvVar: "SUCCESS_COLOR",
+			EnvVar: "SUCCESS_COLOR,PLUGIN_SUCCESS_COLOR",
 		},
 		cli.StringFlag{
 			Name:   "config.failure.color",
 			Usage:  "config failure color for title in markdown",
-			EnvVar: "FAILURE_COLOR",
+			EnvVar: "FAILURE_COLOR,PLUGIN_FAILURE_COLOR",
+		},
+		cli.BoolFlag{
+			Name:   "config.message.color",
+			Usage:  "configure the message with color or not",
+			EnvVar: "PLUGIN_COLOR,PLUGIN_MESSAGE_COLOR",
+		},
+		cli.BoolFlag{
+			Name:   "config.message.pic",
+			Usage:  "configure the message with picture or not",
+			EnvVar: "PLUGIN_PIC,PLUGIN_MESSAGE_PIC",
+		},
+		cli.BoolFlag{
+			Name:   "config.message.sha.link",
+			Usage:  "link sha source page or not",
+			EnvVar: "PLUGIN_SHA_LINK,PLUGIN_MESSAGE_SHA_LINK",
 		},
 	}
 
@@ -368,6 +383,9 @@ func run(c *cli.Context) {
 			FailurePicUrl: c.String("config.failure.pic.url"),
 			SuccessColor:  c.String("config.success.color"),
 			FailureColor:  c.String("config.failure.color"),
+			WithColor:     c.Bool("config.message.color"),
+			WithPic:       c.Bool("config.message.pic"),
+			LinkSha:       c.Bool("config.message.sha.link"),
 		},
 		CI: CI{
 			RepoLink: c.String("ci.repo.link"),
