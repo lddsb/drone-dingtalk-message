@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"strings"
 )
 
@@ -92,6 +93,7 @@ type (
 		WithColor      bool
 		WithPic        bool
 		LinkSha        bool
+		RetryTime      int
 	}
 	// plugin all config
 	Plugin struct {
@@ -120,47 +122,44 @@ func (p *Plugin) Exec() error {
 	linkUrls := strings.Split(p.Config.LinkUrls, ",")
 	linkTitles := strings.Split(p.Config.LinkTitles, ",")
 	log.Println("sending message type: " + p.Config.MsgType)
-	switch strings.ToLower(p.Config.MsgType) {
-	case "markdown":
-		err := p.WebHook.SendMarkdownMsg(
-			"You have a new message...",
-			p.baseTpl(),
-			p.Config.IsAtALL,
-			mobiles...
-		)
-		if nil != err {
-			log.Println(err)
-			return err
+	var err error
+	retryTime := 1
+	for retryTime <= p.Config.RetryTime {
+		log.Printf("start a %d try", retryTime)
+		switch strings.ToLower(p.Config.MsgType) {
+		case "markdown":
+			err = p.WebHook.SendMarkdownMsg(
+				"You have a new message...",
+				p.baseTpl(),
+				p.Config.IsAtALL,
+				mobiles...
+			)
+		case "text":
+			err = p.WebHook.SendTextMsg(p.baseTpl(), p.Config.IsAtALL, mobiles...)
+		case "actioncard":
+			err = p.WebHook.SendActionCardMsg(
+				"A actionCard title",
+				p.baseTpl(),
+				linkUrls,
+				linkTitles,
+				p.Config.HideAvatar,
+				p.Config.BtnOrientation,
+			)
+		case "link":
+			err = p.WebHook.SendLinkMsg(p.Build.Status, p.baseTpl(), p.Commit.Authors.Avatar, p.Build.Link)
+		default:
+			err = errors.New("not support message type")
 		}
-	case "text":
-		err := p.WebHook.SendTextMsg(p.baseTpl(), p.Config.IsAtALL, mobiles...)
-		if nil != err {
-			log.Println(err)
-			return err
+
+		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+			retryTime++
+		} else {
+			break
 		}
-	case "actioncard":
-		err := p.WebHook.SendActionCardMsg(
-			"A actionCard title",
-			p.baseTpl(),
-			linkUrls,
-			linkTitles,
-			p.Config.HideAvatar,
-			p.Config.BtnOrientation,
-		)
-		if nil != err {
-			log.Println(err)
-			return err
-		}
-	case "link":
-		err := p.WebHook.SendLinkMsg(p.Build.Status, p.baseTpl(), p.Commit.Authors.Avatar, p.Build.Link)
-		if nil != err {
-			log.Println(err)
-			return err
-		}
-	default:
-		msg := "not support message type"
-		log.Println(msg)
-		return errors.New(msg)
+	}
+	if nil != err {
+		log.Println(err)
+		return err
 	}
 	log.Println("send " + p.Config.MsgType + " message success!")
 	return nil

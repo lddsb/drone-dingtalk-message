@@ -330,6 +330,12 @@ func main() {
 			Usage:  "link sha source page or not",
 			EnvVar: "PLUGIN_SHA_LINK,PLUGIN_MESSAGE_SHA_LINK",
 		},
+		cli.IntFlag{
+			Name:   "config.retry.time",
+			Usage:  "time out retry times, default 3",
+			Value:  3,
+			EnvVar: "PLUGIN_RETRY_TIME,PLUGIN_RETRY",
+		},
 	}
 
 	if err := app.Run(os.Args); nil != err {
@@ -386,6 +392,7 @@ func run(c *cli.Context) {
 			WithColor:     c.Bool("config.message.color"),
 			WithPic:       c.Bool("config.message.pic"),
 			LinkSha:       c.Bool("config.message.sha.link"),
+			RetryTime:     c.Int("config.retry.time"),
 		},
 		CI: CI{
 			RepoLink: c.String("ci.repo.link"),
