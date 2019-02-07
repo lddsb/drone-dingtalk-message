@@ -2,6 +2,10 @@
 kind: pipeline
 name: default
 
+workspace:
+  base: /go
+  path: src/github.com/lddsb/drone-dingtalk-message
+
 steps:
 - name: build
   image: golang
