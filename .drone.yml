@@ -1,6 +1,6 @@
 ---
 kind: pipeline
-type: default
+name: default
 
 steps:
 - name: build
