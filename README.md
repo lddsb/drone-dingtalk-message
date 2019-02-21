@@ -1,4 +1,4 @@
-# Drone CI DingTalk Message Plugin
+# Drone CI DingTalk Message Plugin [![Build Status](https://drone.lddsb.com/api/badges/lddsb/drone-dingtalk-message/status.svg)](https://drone.lddsb.com/lddsb/drone-dingtalk-message)
 
 ### Drone CI Plugin Config
 `0.8.x`
