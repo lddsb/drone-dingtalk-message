@@ -9,6 +9,7 @@ import (
 	"github.com/urfave/cli"
 )
 
+// Version of cli
 var Version = "0.1.1202"
 
 func main() {

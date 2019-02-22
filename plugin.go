@@ -8,16 +8,16 @@ import (
 )
 
 type (
-	//  repo base info
+	// Repo `repo base info`
 	Repo struct {
 		FullName string //  repository full name
 	}
-	//  build info
+	// Build `build info`
 	Build struct {
 		Status string //  providers the current build status
 		Link   string //  providers the current build link
 	}
-	//  commit info
+	// Commit `commit info`
 	Commit struct {
 		Branch  string //  providers the branch for the current commit
 		Link    string //  providers the http link to the current commit in the remote source code management system(e.g.GitHub)
@@ -30,7 +30,7 @@ type (
 			Name   string //  providers the author name for the current commit
 		}
 	}
-	//  plugin private config
+	// Config `plugin private config`
 	Config struct {
 		Debug          bool
 		AccessToken    string
@@ -43,7 +43,7 @@ type (
 		HideAvatar     bool
 		BtnOrientation bool
 	}
-	//  extra variables
+	// Extra `extra variables`
 	Extra struct {
 		PicURL        string
 		MsgURL        string
@@ -56,7 +56,7 @@ type (
 		LinkSha       bool
 	}
 
-	// plugin all config
+	// Plugin `plugin all config`
 	Plugin struct {
 		Commit  Commit
 		Repo    Repo
@@ -67,9 +67,7 @@ type (
 	}
 )
 
-/**
-execute webhook
- */
+// Exec `execute webhook`
 func (p *Plugin) Exec() error {
 	var err error
 	if 0 == len(p.Config.AccessToken) {
@@ -97,6 +95,7 @@ func (p *Plugin) Exec() error {
 	return nil
 }
 
+// markdownTpl `output the tpl of markdown`
 func (p *Plugin) markdownTpl() string {
 	var tpl string
 
@@ -179,7 +178,7 @@ func (p *Plugin) baseTpl() string {
 
 /**
 get emoticon
- */
+*/
 func (p *Plugin) getEmoticon() string {
 	emoticons := make(map[string]string)
 	emoticons["success"] = ":)"
@@ -195,7 +194,7 @@ func (p *Plugin) getEmoticon() string {
 
 /**
 get picture url
- */
+*/
 func (p *Plugin) getPicUrl() string {
 	pics := make(map[string]string)
 	//  success picture url
@@ -219,7 +218,7 @@ func (p *Plugin) getPicUrl() string {
 
 /**
 get color for message title
- */
+*/
 func (p *Plugin) getColor() string {
 	colors := make(map[string]string)
 	//  success color

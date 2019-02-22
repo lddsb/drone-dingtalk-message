@@ -10,14 +10,14 @@ import (
 	"regexp"
 )
 
-//  link message struct
+// LinkMsg `link message struct`
 type LinkMsg struct {
 	Title      string `json:"title"`
 	MessageURL string `json:"messageURL"`
 	PicURL     string `json:"picURL"`
 }
 
-//  action card message struct
+// ActionCard `action card message struct`
 type ActionCard struct {
 	Text           string `json:"text"`
 	Title          string `json:"title"`
@@ -31,7 +31,7 @@ type ActionCard struct {
 	} `json:"btns"`
 }
 
-//  payload
+// PayLoad payload
 type PayLoad struct {
 	MsgType string `json:"msgtype"`
 	Text    struct {
@@ -57,15 +57,17 @@ type PayLoad struct {
 	} `json:"at"`
 }
 
-//  web hook base config
+// WebHook `web hook base config`
 type WebHook struct {
 	AccessToken string `json:"accessToken"`
 }
 
+// NewWebHook `new a webhook`
 func NewWebHook(accessToken string) *WebHook {
 	return &WebHook{AccessToken: accessToken}
 }
 
+// Response `dingtalk webhook response struct`
 type Response struct {
 	ErrorCode    int    `json:"errcode"`
 	ErrorMessage string `json:"errmsg"`
@@ -110,7 +112,7 @@ func (w *WebHook) sendPayload(payload *PayLoad) error {
 	return nil
 }
 
-//  text message
+// SendTextMsg `send a text message`
 func (w *WebHook) SendTextMsg(content string, isAtAll bool, mobiles ...string) error {
 	//  send request
 	return w.sendPayload(&PayLoad{
@@ -130,7 +132,7 @@ func (w *WebHook) SendTextMsg(content string, isAtAll bool, mobiles ...string) e
 	})
 }
 
-//  with link message
+// SendLinkMsg `send a link message`
 func (w *WebHook) SendLinkMsg(title, content, picURL, msgURL string) error {
 	return w.sendPayload(&PayLoad{
 		MsgType: "link",
@@ -148,7 +150,7 @@ func (w *WebHook) SendLinkMsg(title, content, picURL, msgURL string) error {
 	})
 }
 
-//  send markdown msg
+// SendMarkdownMsg `send a markdown msg`
 func (w *WebHook) SendMarkdownMsg(title, content string, isAtAll bool, mobiles ...string) error {
 	firstLine := false
 	for _, mobile := range mobiles {
@@ -180,7 +182,7 @@ func (w *WebHook) SendMarkdownMsg(title, content string, isAtAll bool, mobiles .
 	})
 }
 
-//  send single action card
+// SendActionCardMsg `send single action card message`
 func (w *WebHook) SendActionCardMsg(title, content string, linkTitles, linkUrls []string, hideAvatar, btnOrientation bool) error {
 	//  validation is empty
 	if 0 == len(linkTitles) || 0 == len(linkUrls) {
@@ -228,7 +230,7 @@ func (w *WebHook) SendActionCardMsg(title, content string, linkTitles, linkUrls 
 	})
 }
 
-//  send link card message
+// SendLinkCardMsg `send link card message`
 func (w *WebHook) SendLinkCardMsg(messages []LinkMsg) error {
 	return w.sendPayload(&PayLoad{
 		MsgType: "feedCard",
