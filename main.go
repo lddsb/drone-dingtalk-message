@@ -182,9 +182,12 @@ func run(c *cli.Context) {
 		Config: Config{
 			AccessToken: c.String("config.token"),
 			//Lang:          c.String("config.lang"),
-			IsAtALL:       c.Bool("config.message.at.all"),
-			MsgType:       c.String("config.message.type"),
-			Mobiles:       c.String("config.message.at.mobiles"),
+			IsAtALL: c.Bool("config.message.at.all"),
+			MsgType: c.String("config.message.type"),
+			Mobiles: c.String("config.message.at.mobiles"),
+			Debug:   c.Bool("config.debug"),
+		},
+		Extra: Extra{
 			SuccessPicUrl: c.String("config.success.pic.url"),
 			FailurePicUrl: c.String("config.failure.pic.url"),
 			SuccessColor:  c.String("config.success.color"),
@@ -192,7 +195,6 @@ func run(c *cli.Context) {
 			WithColor:     c.Bool("config.message.color"),
 			WithPic:       c.Bool("config.message.pic"),
 			LinkSha:       c.Bool("config.message.sha.link"),
-			Debug:         c.Bool("config.debug"),
 		},
 	}
 
