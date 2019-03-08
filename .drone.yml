@@ -28,6 +28,8 @@ steps:
     when:
       status:
         - success
+      event:
+        - tag
     settings:
       repo: lddsb/drone-dingtalk-message
       dockerfile: Dockerfile
@@ -42,5 +44,3 @@ steps:
 trigger:
   branch:
     - master
-  event:
-    - tags
