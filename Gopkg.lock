@@ -13,6 +13,14 @@
   version = "v1.3.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:9142979c770f3d0f3c42c2eec532048bbbe2571134da91e8946cd8610c85c04b"
+  name = "github.com/lddsb/dingtalk-webhook"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b4abe34b5fa9af8ea7d5f28c02bd314558b21f7f"
+
+[[projects]]
   digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
   name = "github.com/urfave/cli"
   packages = ["."]
@@ -25,6 +33,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/joho/godotenv/autoload",
+    "github.com/lddsb/dingtalk-webhook",
     "github.com/urfave/cli",
   ]
   solver-name = "gps-cdcl"

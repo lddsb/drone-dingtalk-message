@@ -148,35 +148,36 @@ func main() {
 
 	if err := app.Run(os.Args); nil != err {
 		log.Println(err)
-		os.Exit(1)
 	}
 }
 
 //  run with args
 func run(c *cli.Context) {
 	plugin := Plugin{
-		//  repo info
-		Repo: Repo{
-			FullName: c.String("repo.fullname"),
-		},
-		//  build info
-		Build: Build{
-			Status: c.String("build.status"),
-			Link:   c.String("build.link"),
-		},
-		Commit: Commit{
-			Sha:     c.String("commit.sha"),
-			Branch:  c.String("commit.branch"),
-			Message: c.String("commit.message"),
-			Link:    c.String("commit.link"),
-			Authors: struct {
-				Avatar string
-				Email  string
-				Name   string
-			}{
-				Avatar: c.String("commit.author.avatar"),
-				Email:  c.String("commit.author.email"),
-				Name:   c.String("commit.author.name"),
+		Drone: Drone{
+			//  repo info
+			Repo: Repo{
+				FullName: c.String("repo.fullname"),
+			},
+			//  build info
+			Build: Build{
+				Status: c.String("build.status"),
+				Link:   c.String("build.link"),
+			},
+			Commit: Commit{
+				Sha:     c.String("commit.sha"),
+				Branch:  c.String("commit.branch"),
+				Message: c.String("commit.message"),
+				Link:    c.String("commit.link"),
+				Authors: struct {
+					Avatar string
+					Email  string
+					Name   string
+				}{
+					Avatar: c.String("commit.author.avatar"),
+					Email:  c.String("commit.author.email"),
+					Name:   c.String("commit.author.name"),
+				},
 			},
 		},
 		//  custom config
@@ -189,18 +190,21 @@ func run(c *cli.Context) {
 			Debug:   c.Bool("config.debug"),
 		},
 		Extra: Extra{
-			SuccessPicUrl: c.String("config.success.pic.url"),
-			FailurePicUrl: c.String("config.failure.pic.url"),
-			SuccessColor:  c.String("config.success.color"),
-			FailureColor:  c.String("config.failure.color"),
-			WithColor:     c.Bool("config.message.color"),
-			WithPic:       c.Bool("config.message.pic"),
-			LinkSha:       c.Bool("config.message.sha.link"),
+			Pic: ExtraPic{
+				WithPic:       c.Bool("config.message.pic"),
+				SuccessPicURL: c.String("config.success.pic.url"),
+				FailurePicURL: c.String("config.failure.pic.url"),
+			},
+			Color: ExtraColor{
+				SuccessColor: c.String("config.success.color"),
+				FailureColor: c.String("config.failure.color"),
+				WithColor:    c.Bool("config.message.color"),
+			},
+			LinkSha: c.Bool("config.message.sha.link"),
 		},
 	}
 
 	if err := plugin.Exec(); nil != err {
 		fmt.Println(err)
-		os.Exit(1)
 	}
 }

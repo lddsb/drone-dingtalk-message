@@ -21,13 +21,19 @@ steps:
         - master
       status:
         - success
-      event:
-        - push
     settings:
       repo: lddsb/drone-dingtalk-message
       dockerfile: Dockerfile
-      tags: latest
+      tags:
+        - latest
+        - 1.0.0
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
+
+trigger:
+  branch:
+    - master
+  event:
+    - tags
