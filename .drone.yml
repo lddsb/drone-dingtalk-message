@@ -13,12 +13,19 @@ steps:
       - go get -u github.com/golang/dep/cmd/dep
       - dep ensure
       - CGO_ENABLED=0 GOOS=linux go build -a -o drone-dingtalk-message .
+      - go test -race -coverprofile=coverage.txt -covermode=atomic
       - ./drone-dingtalk-message -h
+  - name: codecov
+    image: plugins/codecov
+    when:
+      status:
+        - success
+    settings:
+      token:
+        from_secret: codecov_token
   - name: publish
     image: plugins/docker
     when:
-      branch:
-        - master
       status:
         - success
     settings:
