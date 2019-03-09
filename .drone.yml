@@ -1,35 +1,83 @@
 ---
 kind: pipeline
-name: default
+name: testing
 
-workspace:
-  base: /go
-  path: src/github.com/lddsb/drone-dingtalk-message
-
-steps:
-  - name: build
+setps:
+  - name: vet
+    pull: always
     image: golang
     commands:
-      - go get -u github.com/golang/dep/cmd/dep
-      - dep ensure
-      - CGO_ENABLED=0 GOOS=linux go build -a -o drone-dingtalk-message .
-      - go test -race -coverprofile=coverage.txt -covermode=atomic
-      - ./drone-dingtalk-message -h
+      - make vet
+    environment:
+      GO111MODULE: on
+    volumes:
+      - name: gopath
+        path: /go
+
+  - name: test
+    pull: always
+    image: golang
+    commands:
+      - make test
+      - make coverage
+    environment:
+      GO111MODULE: on
+    volumes:
+      - name: gopath
+        path: /go
+
   - name: codecov
+    pull: always
     image: plugins/codecov
-    when:
-      status:
-        - success
     settings:
       token:
         from_secret: codecov_token
-  - name: publish
-    image: plugins/docker
+
+volumes:
+  - name: gopath
+    temp: {}
+
+---
+kind: pipeline
+name: build
+
+steps:
+  - name: build
+    pull: always
+    image: golang
+    commands:
+      - go build -a -o drone-dingtalk-message .
+    environment:
+      CGO_ENABLED: 0
+      GO111MODULE: on
     when:
-      status:
-        - success
       event:
         - tag
+
+  - name: executable
+    pull: always
+    image: golang
+    commands:
+      - ./drone-dingtalk-message -h
+
+  - name: dryrun
+    pull: always
+    image: plugins/docker
+    settings:
+      cache_from: lddsb/drone-dingtalk-message
+      dockerfile: Dockerfile
+      dryrun: true
+      repo: lddsb/drone-dingtalk-message
+      tags:
+        - latest
+        - 1.0.0
+    when:
+      event:
+        - pull_request
+
+  - name: publish
+    pull: always
+    image: plugins/docker
     settings:
       repo: lddsb/drone-dingtalk-message
       dockerfile: Dockerfile
@@ -40,7 +88,17 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
+    when:
+      status:
+        - success
+      event:
+        - tag
 
 trigger:
-  branch:
-    - master
+  ref:
+    - refs/heads/master
+    - 'refs/pull/**'
+    - 'refs/tags/**'
+
+depends_on:
+  - testing
