@@ -2,7 +2,7 @@
 kind: pipeline
 name: testing
 
-setps:
+steps:
   - name: vet
     pull: always
     image: golang
@@ -50,9 +50,6 @@ steps:
     environment:
       CGO_ENABLED: 0
       GO111MODULE: on
-    when:
-      event:
-        - tag
 
   - name: executable
     pull: always
