@@ -97,20 +97,17 @@ String. You can customize the picture for the `build failure` message by this op
 
 
 ### Development
+We use `go mod` to manage dependencies, so it's easy to build.
 
-- First get this repo
+- get this repo
 ```shell
-go get github.com/lddsb/drone-dingtalk-message
-```
-- get dependent lib
-```shell
-dep ensure
+$ git clone https://github.com/lddsb/drone-dingtalk-message.git /path/to/you/want
 ```
 - build
 ```shell
-cd $GOPATH/src/github.com/lddsb/drone-dingtalk-message && go build .
+$ cd /path/to/you/want && GO111MODULE=on go build .
 ```
 - run
 ```shell
-./drone-dingtalk-message -h
+$ ./drone-dingtalk-message -h
 ```
