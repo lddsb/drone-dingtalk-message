@@ -9,7 +9,7 @@ steps:
     commands:
       - make vet
     environment:
-      GO111MODULE: on
+      GO111MODULE: "on"
     volumes:
       - name: gopath
         path: /go
@@ -21,7 +21,7 @@ steps:
       - make test
       - make coverage
     environment:
-      GO111MODULE: on
+      GO111MODULE: "on"
     volumes:
       - name: gopath
         path: /go
@@ -37,9 +37,13 @@ volumes:
   - name: gopath
     temp: {}
 
+trigger:
+  event:
+    - pull_request
+
 ---
 kind: pipeline
-name: build
+name: dryrun
 
 steps:
   - name: build
@@ -49,13 +53,7 @@ steps:
       - go build -a -o drone-dingtalk-message .
     environment:
       CGO_ENABLED: 0
-      GO111MODULE: on
-
-  - name: executable
-    pull: always
-    image: golang
-    commands:
-      - ./drone-dingtalk-message -h
+      GO111MODULE: "on"
 
   - name: dryrun
     pull: always
@@ -68,34 +66,14 @@ steps:
       tags:
         - latest
         - 1.0.0
-    when:
-      event:
-        - pull_request
-
-  - name: publish
-    pull: always
-    image: plugins/docker
-    settings:
-      repo: lddsb/drone-dingtalk-message
-      dockerfile: Dockerfile
-      tags:
-        - latest
-        - 1.0.0
-      username:
+      name:
         from_secret: docker_username
       password:
         from_secret: docker_password
-    when:
-      status:
-        - success
-      event:
-        - tag
 
 trigger:
-  ref:
-    - refs/heads/master
-    - 'refs/pull/**'
-    - 'refs/tags/**'
+  event:
+    - pull_request
 
 depends_on:
   - testing
