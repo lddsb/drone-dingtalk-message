@@ -61,7 +61,7 @@ steps:
     settings:
       cache_from: lddsb/drone-dingtalk-message
       dockerfile: Dockerfile
-      dryrun: true
+      dry_run: true
       repo: lddsb/drone-dingtalk-message
       tags:
         - latest
