@@ -3,48 +3,61 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
-	"strings"
-
 	webhook "github.com/lddsb/dingtalk-webhook"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"regexp"
+	"strings"
 )
 
 type (
-	// Repo `repo base info`
+	// Repo repo base info
 	Repo struct {
-		FullName string //  repository full name
+		ShortName string //  short name
+		GroupName string //  group name
+		FullName  string //  repository full name
+		OwnerName string //  repo owner
+		RemoteURL string //  repo remote url
 	}
 
-	// Build `build info`
+	// Build build info
 	Build struct {
-		Status string //  providers the current build status
-		Link   string //  providers the current build link
+		Status     string //  providers the current build status
+		Link       string //  providers the current build link
+		Event      string //  trigger event
+		StartAt    int64  //  build start at ( unix timestamp )
+		FinishedAt int64  //  build finish at ( unix timestamp )
 	}
 
-	// Commit `commit info`
+	// Commit commit info
 	Commit struct {
 		Branch  string //  providers the branch for the current commit
 		Link    string //  providers the http link to the current commit in the remote source code management system(e.g.GitHub)
 		Message string //  providers the commit message for the current build
 		Sha     string //  providers the commit sha for the current build
-		Authors CommitAuthors
+		Ref     string //  commit ref
+		Author  CommitAuthor
 	}
 
-	// CommitAuthors `commit author info`
-	CommitAuthors struct {
-		Avatar string //  providers the author avatar for the current commit
-		Email  string //  providers the author email for the current commit
-		Name   string //  providers the author name for the current commit
+	// CommitAuthor commit author info
+	CommitAuthor struct {
+		Avatar   string //  providers the author avatar for the current commit
+		Email    string //  providers the author email for the current commit
+		Name     string //  providers the author name for the current commit
+		Username string //  the author username for the current commit
 	}
 
-	// Drone `drone info`
+	// Drone drone info
 	Drone struct {
 		Repo   Repo
 		Build  Build
 		Commit Commit
 	}
 
-	// Config `plugin private config`
+	// Config plugin private config
 	Config struct {
 		Debug       bool
 		AccessToken string
@@ -54,12 +67,12 @@ type (
 		MsgType     string
 	}
 
-	// MessageConfig `DingTalk message struct`
+	// MessageConfig DingTalk message struct
 	MessageConfig struct {
 		ActionCard ActionCard
 	}
 
-	// ActionCard `action card message struct`
+	// ActionCard action card message struct
 	ActionCard struct {
 		LinkUrls       string
 		LinkTitles     string
@@ -67,36 +80,59 @@ type (
 		BtnOrientation bool
 	}
 
-	// Extra `extra variables`
-	Extra struct {
-		Color   ExtraColor
-		Pic     ExtraPic
-		LinkSha bool
-	}
-
-	// ExtraPic `extra config for pic`
-	ExtraPic struct {
-		WithPic       bool
+	// Pic extra config for pic
+	Pic struct {
 		SuccessPicURL string
 		FailurePicURL string
 	}
 
-	// ExtraColor `extra config for color`
-	ExtraColor struct {
-		WithColor    bool
+	// Color extra config for color
+	Color struct {
 		SuccessColor string
 		FailureColor string
 	}
 
-	// Plugin `plugin all config`
+	// Plugin plugin all config
 	Plugin struct {
-		Drone  Drone
-		Config Config
-		Extra  Extra
+		Tpl     Tpl
+		Drone   Drone
+		Config  Config
+		Custom  Custom
+		Message MessageConfig
+	}
+
+	Custom struct {
+		Tpl    string
+		Color  Color
+		Pic    Pic
+	}
+
+	Tpl struct {
+		Repo   TplRepo
+		Commit TplCommit
+		Build TplBuild
+	}
+
+	TplRepo struct {
+		FullName  string
+		ShortName string
+	}
+
+	TplCommit struct {
+		Branch string
+	}
+
+	TplBuild struct {
+		Status Status
+	}
+
+	Status struct {
+		Success string
+		Failure string
 	}
 )
 
-// Exec `execute webhook`
+// Exec execute webhook
 func (p *Plugin) Exec() error {
 	var err error
 	if 0 == len(p.Config.AccessToken) {
@@ -104,19 +140,20 @@ func (p *Plugin) Exec() error {
 		return errors.New(msg)
 	}
 
-	if 6 > len(p.Drone.Commit.Sha) {
-		return errors.New("commit sha cannot short than 6")
+	tpl, err := p.getMessage()
+	if err != nil {
+		return err
 	}
 
 	newWebhook := webhook.NewWebHook(p.Config.AccessToken)
 	mobiles := strings.Split(p.Config.Mobiles, ",")
 	switch strings.ToLower(p.Config.MsgType) {
 	case "markdown":
-		err = newWebhook.SendMarkdownMsg("You have a new message...", p.baseTpl(), p.Config.IsAtALL, mobiles...)
+		err = newWebhook.SendMarkdownMsg("new message", tpl, p.Config.IsAtALL, mobiles...)
 	case "text":
-		err = newWebhook.SendTextMsg(p.baseTpl(), p.Config.IsAtALL, mobiles...)
+		err = newWebhook.SendTextMsg(tpl, p.Config.IsAtALL, mobiles...)
 	case "link":
-		err = newWebhook.SendLinkMsg(p.Drone.Build.Status, p.baseTpl(), p.Drone.Commit.Authors.Avatar, p.Drone.Build.Link)
+		err = newWebhook.SendLinkMsg(p.Drone.Build.Status, tpl, p.Drone.Commit.Author.Avatar, p.Drone.Build.Link)
 	default:
 		msg := "not support message type"
 		err = errors.New(msg)
@@ -129,90 +166,156 @@ func (p *Plugin) Exec() error {
 	return err
 }
 
-// markdownTpl `output the tpl of markdown`
-func (p *Plugin) markdownTpl() string {
-	var tpl string
+// fileExists check file is exists
+func fileExists(filePath string) bool {
+	_, err := os.Stat(filePath)
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
+	}
+	return true
+}
 
-	//  title
-	title := fmt.Sprintf(" %s *Branch Build %s*",
-		strings.Title(p.Drone.Commit.Branch),
-		strings.Title(p.Drone.Build.Status))
-	//  with color on title
-	if p.Extra.Color.WithColor {
-		title = fmt.Sprintf("<font color=%s>%s</font>", p.getColor(), title)
+// getTpl get tpl from local file or remote file
+func (p *Plugin) getTpl() (tpl string, err error) {
+	//var tpl string
+	tplDir := "/app/tpls"
+	if "" == p.Custom.Tpl {
+		p.Custom.Tpl = fmt.Sprintf("%s/%s.tpl", tplDir, strings.ToLower(p.Config.MsgType))
 	}
 
-	tpl = fmt.Sprintf("# %s \n", title)
-
-	// with pic
-	if p.Extra.Pic.WithPic {
-		tpl += fmt.Sprintf("![%s](%s)\n\n",
-			p.Drone.Build.Status,
-			p.getPicURL())
+	u, err := url.Parse(p.Custom.Tpl)
+	if err != nil {
+		return "", err
 	}
 
-	//  commit message
-	commitMsg := fmt.Sprintf("%s", p.Drone.Commit.Message)
-	if p.Extra.Color.WithColor {
-		commitMsg = fmt.Sprintf("<font color=%s>%s</font>", p.getColor(), commitMsg)
+	if u.Scheme != "" {
+		resp, err := http.Get(p.Custom.Tpl)
+		if err != nil {
+			return "", err
+		}
+
+		// check response
+		if u.Path != resp.Request.URL.Path {
+			return "", errors.New("cannot get tpl from url")
+		}
+
+		// defer close
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return "", err
+		}
+
+		tpl = string(body)
+	} else {
+		if !fileExists(p.Custom.Tpl) {
+			return "", errors.New("tpl file not exists")
+		}
+
+		tplStr, err := ioutil.ReadFile(p.Custom.Tpl)
+		if err != nil {
+			return "", err
+		}
+
+		tpl = string(tplStr)
 	}
-	tpl += commitMsg + "\n\n"
 
-	//  sha info
-	commitSha := p.Drone.Commit.Sha
-	if p.Extra.LinkSha {
-		commitSha = fmt.Sprintf("[Click To %s Commit Detail Page](%s)", commitSha[:6], p.Drone.Commit.Link)
+
+	return tpl, nil
+}
+
+// fillTpl fill the tpl by valid keyword
+func (p *Plugin) fillTpl(tpl string) string {
+	envs := p.getEnvs()
+	// replace regex
+	reg := regexp.MustCompile(`\[([^\[\]]*)]`)
+	match := reg.FindAllStringSubmatch(tpl, -1)
+	for _, m := range match {
+		// check if the keyword is legal
+		if _, ok := envs[m[1]]; ok {
+			// replace keyword
+			tpl = strings.ReplaceAll(tpl, m[0], envs[m[1]].(string))
+		}
 	}
-	tpl += commitSha + "\n\n"
 
-	//  author info
-	authorInfo := fmt.Sprintf("`%s(%s)`", p.Drone.Commit.Authors.Name, p.Drone.Commit.Authors.Email)
-	tpl += authorInfo + "\n\n"
-
-	//  build detail link
-	buildDetail := fmt.Sprintf("[Click To The Build Detail Page %s](%s)",
-		p.getEmoticon(),
-		p.Drone.Build.Link)
-	tpl += buildDetail
 	return tpl
 }
 
-func (p *Plugin) baseTpl() string {
-	tpl := ""
-	switch strings.ToLower(p.Config.MsgType) {
-	case "markdown":
-		tpl = p.markdownTpl()
-	case "text":
-		tpl = fmt.Sprintf(`[%s] %s
-%s (%s)
-@%s
-%s (%s)
-`,
-			p.Drone.Build.Status,
-			strings.TrimSpace(p.Drone.Commit.Message),
-			p.Drone.Repo.FullName,
-			p.Drone.Commit.Branch,
-			p.Drone.Commit.Sha,
-			p.Drone.Commit.Authors.Name,
-			p.Drone.Commit.Authors.Email)
-	case "link":
-		tpl = fmt.Sprintf(`%s(%s) @%s %s(%s)`,
-			p.Drone.Repo.FullName,
-			p.Drone.Commit.Branch,
-			p.Drone.Commit.Sha[:6],
-			p.Drone.Commit.Authors.Name,
-			p.Drone.Commit.Authors.Email)
-	case "actionCard":
-		//  coming soon
+// getEnvs get available envs
+func (p *Plugin) getEnvs() map[string]interface{} {
+	var envs map[string]interface{}
+	envs = make(map[string]interface{})
+	envs["TPL_REPO_FULL_NAME"] = p.Drone.Repo.FullName
+	if p.Tpl.Repo.FullName != "" {
+		envs["TPL_REPO_FULL_NAME"] = p.Tpl.Repo.FullName
+	}
+	envs["TPL_REPO_SHORT_NAME"] = p.Drone.Repo.ShortName
+	if p.Tpl.Repo.ShortName != "" {
+		envs["TPL_REPO_SHORT_NAME"] = p.Tpl.Repo.ShortName
+	}
+	envs["TPL_REPO_GROUP_NAME"] = p.Drone.Repo.GroupName
+	envs["TPL_REPO_OWNER_NAME"] = p.Drone.Repo.OwnerName
+	envs["TPL_REPO_REMOTE_URL"] = p.Drone.Repo.RemoteURL
 
+	envs["TPL_BUILD_STATUS"] = p.getStatus()
+	envs["TPL_BUILD_LINK"] = p.Drone.Build.Link
+	envs["TPL_BUILD_EVENT"] = p.Drone.Build.Event
+	envs["TPL_BUILD_CONSUMING"] = fmt.Sprintf("%v", p.Drone.Build.FinishedAt-p.Drone.Build.StartAt)
+
+	envs["TPL_COMMIT_SHA"] = p.Drone.Commit.Sha
+	envs["TPL_COMMIT_REF"] = p.Drone.Commit.Ref
+	envs["TPL_COMMIT_LINK"] = p.Drone.Commit.Link
+	envs["TPL_COMMIT_MSG"] = p.Drone.Commit.Message
+	envs["TPL_COMMIT_BRANCH"] = p.Drone.Commit.Branch
+	if p.Tpl.Commit.Branch != "" {
+		envs["TPL_COMMIT_BRANCH"] = p.Tpl.Commit.Branch
 	}
 
-	return tpl
+	envs["TPL_AUTHOR_NAME"] = p.Drone.Commit.Author.Name
+	envs["TPL_AUTHOR_USERNAME"] = p.Drone.Commit.Author.Username
+	envs["TPL_AUTHOR_EMAIL"] = p.Drone.Commit.Author.Email
+	envs["TPL_AUTHOR_AVATAR"] = p.Drone.Commit.Author.Avatar
+
+	envs["TPL_STATUS_PIC"] = p.getPicURL()
+	envs["TPL_STATUS_COLOR"] = p.getColor()
+	envs["TPL_STATUS_EMOTICON"] = p.getEmoticon()
+
+	return envs
 }
 
-/**
-get emoticon
-*/
+// getMessage get message tpl
+func (p *Plugin) getMessage() (tpl string, err error) {
+	tpl, err = p.getTpl()
+	if err != nil {
+		return "", err
+	}
+	return p.fillTpl(tpl), nil
+}
+
+// getStatus
+func (p *Plugin) getStatus() string {
+	if p.Drone.Build.Status == "success" {
+		if p.Tpl.Build.Status.Success != "" {
+			return p.Tpl.Build.Status.Success
+		}
+
+		return p.Drone.Build.Status
+	}
+
+	if p.Tpl.Build.Status.Failure != "" {
+		return p.Tpl.Build.Status.Failure
+	}
+
+	return p.Drone.Build.Status
+}
+
+// get emoticon
 func (p *Plugin) getEmoticon() string {
 	emoticons := make(map[string]string)
 	emoticons["success"] = ":)"
@@ -226,44 +329,41 @@ func (p *Plugin) getEmoticon() string {
 	return ":("
 }
 
-/**
-get picture url
-*/
+// get picture url
 func (p *Plugin) getPicURL() string {
 	pics := make(map[string]string)
 	//  success picture url
 	pics["success"] = "https://ws4.sinaimg.cn/large/006tNc79gy1fz05g5a7utj30he0bfjry.jpg"
-	if p.Extra.Pic.SuccessPicURL != "" {
-		pics["success"] = p.Extra.Pic.SuccessPicURL
+	if p.Custom.Pic.SuccessPicURL != "" {
+		pics["success"] = p.Custom.Pic.SuccessPicURL
 	}
 	//  failure picture url
 	pics["failure"] = "https://ws1.sinaimg.cn/large/006tNc79gy1fz0b4fghpnj30hd0bdmxn.jpg"
-	if p.Extra.Pic.FailurePicURL != "" {
-		pics["failure"] = p.Extra.Pic.FailurePicURL
+	if p.Custom.Pic.FailurePicURL != "" {
+		pics["failure"] = p.Custom.Pic.FailurePicURL
 	}
 
-	url, ok := pics[p.Drone.Build.Status]
+	picURL, ok := pics[p.Drone.Build.Status]
 	if ok {
-		return url
+		return picURL
 	}
 
 	return ""
 }
 
-/**
-get color for message title
-*/
+// get color for message title
 func (p *Plugin) getColor() string {
 	colors := make(map[string]string)
 	//  success color
 	colors["success"] = "#008000"
-	if p.Extra.Color.SuccessColor != "" {
-		colors["success"] = "#" + p.Extra.Color.SuccessColor
+	if p.Custom.Color.SuccessColor != "" {
+		colors["success"] = "#" + p.Custom.Color.SuccessColor
 	}
+
 	//  failure color
 	colors["failure"] = "#FF0000"
-	if p.Extra.Color.FailureColor != "" {
-		colors["failure"] = "#" + p.Extra.Color.FailureColor
+	if p.Custom.Color.FailureColor != "" {
+		colors["failure"] = "#" + p.Custom.Color.FailureColor
 	}
 
 	color, ok := colors[p.Drone.Build.Status]

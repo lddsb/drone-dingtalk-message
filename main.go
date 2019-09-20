@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
-
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/cli"
+	"log"
+	"os"
 )
 
 // Version of cli
@@ -37,12 +36,6 @@ func main() {
 			EnvVar: "PLUGIN_ACCESS_TOKEN,PLUGIN_TOKEN",
 		},
 		cli.StringFlag{
-			Name:   "config.lang",
-			Value:  "zh_CN",
-			Usage:  "the lang display (zh_CN or en_US, zh_CN is default)",
-			EnvVar: "PLUGIN_LANG",
-		},
-		cli.StringFlag{
 			Name:   "config.message.type,message_type",
 			Usage:  "dingtalk message type, like text, markdown, action card, link and feed card...",
 			EnvVar: "PLUGIN_MSG_TYPE,PLUGIN_TYPE,PLUGIN_MESSAGE_TYPE",
@@ -56,6 +49,11 @@ func main() {
 			Name:   "config.message.at.mobiles",
 			Usage:  "at someone in a dingtalk group need this guy bind's mobile",
 			EnvVar: "PLUGIN_MSG_AT_MOBILES",
+		},
+		cli.StringFlag{
+			Name:   "commit.author.username",
+			Usage:  "providers the author username for the current commit",
+			EnvVar: "DRONE_COMMIT_AUTHOR",
 		},
 		cli.StringFlag{
 			Name:   "commit.author.avatar",
@@ -94,9 +92,34 @@ func main() {
 			EnvVar: "DRONE_COMMIT_SHA",
 		},
 		cli.StringFlag{
-			Name:   "repo.fullname",
+			Name:   "commit.ref",
+			Usage:  "provider the commit ref for the current build",
+			EnvVar: "DRONE_COMMIT_REF",
+		},
+		cli.StringFlag{
+			Name:   "repo.full.name",
 			Usage:  "providers the full name of the repository",
 			EnvVar: "DRONE_REPO",
+		},
+		cli.StringFlag{
+			Name:   "repo.name",
+			Usage:  "provider the name of the repository",
+			EnvVar: "DRONE_REPO_NAME",
+		},
+		cli.StringFlag{
+			Name:   "repo.group",
+			Usage:  "provider the group of the repository",
+			EnvVar: "DRONE_REPO_NAMESPACE",
+		},
+		cli.StringFlag{
+			Name:   "repo.remote.url",
+			Usage:  "provider the remote url of the repository",
+			EnvVar: "DRONE_REMOTE_URL",
+		},
+		cli.StringFlag{
+			Name:   "repo.owner",
+			Usage:  "provider the owner of the repository",
+			EnvVar: "DRONE_REPO_OWNER",
 		},
 		cli.StringFlag{
 			Name:   "build.status",
@@ -110,39 +133,69 @@ func main() {
 			EnvVar: "DRONE_BUILD_LINK",
 		},
 		cli.StringFlag{
-			Name:   "config.success.pic.url",
-			Usage:  "config success picture url",
+			Name:   "build.event",
+			Usage:  "build event",
+			EnvVar: "DRONE_BUILD_EVENT",
+		},
+		cli.StringFlag{
+			Name:   "build.started",
+			Usage:  "build started",
+			EnvVar: "DRONE_BUILD_STARTED",
+		},
+		cli.StringFlag{
+			Name:   "build.finished",
+			Usage:  "build finished",
+			EnvVar: "DRONE_BUILD_FINISHED",
+		},
+		cli.StringFlag{
+			Name: "tpl.build.status.success",
+			Usage: "tpl.build status for replace success",
+			EnvVar: "TPL_BUILD_STATUS_SUCCESS, PLUGIN_TPL_BUILD_STATUS_SUCCESS",
+		},
+		cli.StringFlag{
+			Name: "tpl.build.status.failure",
+			Usage: "tpl.build status for replace failure",
+			EnvVar: "TPL_BUILD_STATUS_FAILURE, PLUGIN_TPL_BUILD_STATUS_FAILURE",
+		},
+		cli.StringFlag{
+			Name:   "custom.pic.url.success",
+			Usage:  "custom success picture url",
 			EnvVar: "SUCCESS_PICTURE_URL,PLUGIN_SUCCESS_PIC",
 		},
 		cli.StringFlag{
-			Name:   "config.failure.pic.url",
-			Usage:  "config failure picture url",
+			Name:   "custom.pic.url.failure",
+			Usage:  "custom failure picture url",
 			EnvVar: "FAILURE_PICTURE_URL,PLUGIN_FAILURE_PIC",
 		},
 		cli.StringFlag{
-			Name:   "config.success.color",
-			Usage:  "config success color for title in markdown",
+			Name:   "custom.color.success",
+			Usage:  "custom success color for title in markdown",
 			EnvVar: "SUCCESS_COLOR,PLUGIN_SUCCESS_COLOR",
 		},
 		cli.StringFlag{
-			Name:   "config.failure.color",
-			Usage:  "config failure color for title in markdown",
+			Name:   "custom.color.failure",
+			Usage:  "custom failure color for title in markdown",
 			EnvVar: "FAILURE_COLOR,PLUGIN_FAILURE_COLOR",
 		},
-		cli.BoolFlag{
-			Name:   "config.message.color",
-			Usage:  "configure the message with color or not",
-			EnvVar: "PLUGIN_COLOR,PLUGIN_MESSAGE_COLOR",
+		cli.StringFlag{
+			Name:   "custom.tpl",
+			Usage:  "custom tpl",
+			EnvVar: "PLUGIN_TPL,PLUGIN_CUSTOM_TPL",
 		},
-		cli.BoolFlag{
-			Name:   "config.message.pic",
-			Usage:  "configure the message with picture or not",
-			EnvVar: "PLUGIN_PIC,PLUGIN_MESSAGE_PIC",
+		cli.StringFlag{
+			Name: "tpl.repo.full.name",
+			Usage: "tpl custom repo full name",
+			EnvVar: "PLUGIN_TPL_REPO_FULL_NAME,TPL_REPO_FULL_NAME",
 		},
-		cli.BoolFlag{
-			Name:   "config.message.sha.link",
-			Usage:  "link sha source page or not",
-			EnvVar: "PLUGIN_SHA_LINK,PLUGIN_MESSAGE_SHA_LINK",
+		cli.StringFlag{
+			Name: "tpl.repo.short.name",
+			Usage: "tpl custom repo short name",
+			EnvVar: "PLUGIN_TPL_REPO_SHORT_NAME,TPL_REPO_SHORT_NAME",
+		},
+		cli.StringFlag{
+			Name: "tpl.commit.branch.name",
+			Usage: "tpl custom commit branch name",
+			EnvVar: "PLUGIN_TPL_COMMIT_BRANCH_NAME,TPL_COMMIT_BRANCH_NAME",
 		},
 	}
 
@@ -157,50 +210,66 @@ func run(c *cli.Context) {
 		Drone: Drone{
 			//  repo info
 			Repo: Repo{
-				FullName: c.String("repo.fullname"),
+				ShortName: c.String("repo.name"),
+				GroupName: c.String("repo.group"),
+				OwnerName: c.String("repo.owner"),
+				RemoteURL: c.String("repo.remote.url"),
+				FullName:  c.String("repo.full.name"),
 			},
 			//  build info
 			Build: Build{
-				Status: c.String("build.status"),
-				Link:   c.String("build.link"),
+				Status:     c.String("build.status"),
+				Link:       c.String("build.link"),
+				Event:      c.String("build.event"),
+				StartAt:    c.Int64("build.started"),
+				FinishedAt: c.Int64("build.finished"),
 			},
 			Commit: Commit{
 				Sha:     c.String("commit.sha"),
 				Branch:  c.String("commit.branch"),
 				Message: c.String("commit.message"),
 				Link:    c.String("commit.link"),
-				Authors: struct {
-					Avatar string
-					Email  string
-					Name   string
-				}{
-					Avatar: c.String("commit.author.avatar"),
-					Email:  c.String("commit.author.email"),
-					Name:   c.String("commit.author.name"),
+				Author: CommitAuthor{
+					Avatar:   c.String("commit.author.avatar"),
+					Email:    c.String("commit.author.email"),
+					Name:     c.String("commit.author.name"),
+					Username: c.String("commit.author.username"),
 				},
 			},
 		},
 		//  custom config
 		Config: Config{
 			AccessToken: c.String("config.token"),
-			//Lang:          c.String("config.lang"),
-			IsAtALL: c.Bool("config.message.at.all"),
-			MsgType: c.String("config.message.type"),
-			Mobiles: c.String("config.message.at.mobiles"),
-			Debug:   c.Bool("config.debug"),
+			IsAtALL:     c.Bool("config.message.at.all"),
+			MsgType:     c.String("config.message.type"),
+			Mobiles:     c.String("config.message.at.mobiles"),
+			Debug:       c.Bool("config.debug"),
 		},
-		Extra: Extra{
-			Pic: ExtraPic{
-				WithPic:       c.Bool("config.message.pic"),
-				SuccessPicURL: c.String("config.success.pic.url"),
-				FailurePicURL: c.String("config.failure.pic.url"),
+		Custom: Custom{
+			Pic: Pic{
+				SuccessPicURL: c.String("custom.pic.url.success"),
+				FailurePicURL: c.String("custom.pic.url.failure"),
 			},
-			Color: ExtraColor{
-				SuccessColor: c.String("config.success.color"),
-				FailureColor: c.String("config.failure.color"),
-				WithColor:    c.Bool("config.message.color"),
+			Color: Color{
+				SuccessColor: c.String("custom.color.success"),
+				FailureColor: c.String("custom.color.failure"),
 			},
-			LinkSha: c.Bool("config.message.sha.link"),
+			Tpl: c.String("custom.tpl"),
+		},
+		Tpl:Tpl{
+			Repo:   TplRepo{
+				FullName: c.String("tpl.repo.full.name"),
+				ShortName: c.String("tpl.repo.short.name"),
+			},
+			Commit: TplCommit{
+				Branch: c.String("tpl.commit.branch.name"),
+			},
+			Build: TplBuild{
+				Status:Status{
+					Success: c.String("tpl.build.status.success"),
+					Failure: c.String("tpl.build.status.failure"),
+				},
+			},
 		},
 	}
 
