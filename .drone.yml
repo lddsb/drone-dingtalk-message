@@ -66,10 +66,6 @@ steps:
       tags:
         - latest
         - 1.0.0
-      name:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
 
 trigger:
   event:
