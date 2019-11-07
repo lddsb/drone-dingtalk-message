@@ -41,6 +41,10 @@ String. Message type, plan support text, markdown, link and action card, but due
 
 String. Your custom `tpl`, it can be a local path or a remote http link.
 
+`tips_title`
+
+String. You can customize the title for the message tips, just work when message type is markdown.
+
 `success_color`
 
 String. You can customize the color for the `build success` message by this option, you should input a hex color, example: `008000`.
@@ -75,7 +79,7 @@ String. You can customize the [TPL_BUILD_STATUS] (when status=`success`) by this
 
 `tpl_build_status_failure`
 
-String. You can customize the [TPL_BUILD_STATUS] (when status=`failure`) by this configuration item. 
+String. You can customize the [TPL_BUILD_STATUS] (when status=`failure`) by this configuration item.
 
 ### TPL
 > `tpl` won't work with message type `link` !!!
@@ -84,11 +88,11 @@ That's a good news, we support `tpl` now.This is a example for `markdown` messag
 
 	# [TPL_REPO_FULL_NAME] build [TPL_BUILD_STATUS], takes [TPL_BUILD_CONSUMING]s
 	[TPL_COMMIT_MSG]
-	
+
 	[TPL_COMMIT_SHA]([TPL_COMMIT_LINK])
-	
+
 	[[TPL_AUTHOR_NAME]([TPL_AUTHOR_EMAIL])](mailto:[TPL_AUTHOR_EMAIL])
-	
+
 	[Click To The Build Detail Page [TPL_STATUS_EMOTICON)]]([TPL_BUILD_LINK])
 You can write your own `tpl` what you want. The syntax of	`tpl` is very simple, you can fill `tpl` with preset variables. It's a list of currently supported preset variables:
 

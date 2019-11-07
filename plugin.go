@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	webhook "github.com/lddsb/dingtalk-webhook"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,6 +10,8 @@ import (
 	"os"
 	"regexp"
 	"strings"
+
+	webhook "github.com/lddsb/dingtalk-webhook"
 )
 
 type (
@@ -65,6 +66,7 @@ type (
 		Mobiles     string
 		Username    string
 		MsgType     string
+		TipsTitle   string
 	}
 
 	// MessageConfig DingTalk message struct
@@ -102,15 +104,15 @@ type (
 	}
 
 	Custom struct {
-		Tpl    string
-		Color  Color
-		Pic    Pic
+		Tpl   string
+		Color Color
+		Pic   Pic
 	}
 
 	Tpl struct {
 		Repo   TplRepo
 		Commit TplCommit
-		Build TplBuild
+		Build  TplBuild
 	}
 
 	TplRepo struct {
@@ -145,11 +147,15 @@ func (p *Plugin) Exec() error {
 		return err
 	}
 
+	if p.Config.TipsTitle == "" {
+		p.Config.TipsTitle = "you have a new message"
+	}
+
 	newWebhook := webhook.NewWebHook(p.Config.AccessToken)
 	mobiles := strings.Split(p.Config.Mobiles, ",")
 	switch strings.ToLower(p.Config.MsgType) {
 	case "markdown":
-		err = newWebhook.SendMarkdownMsg("new message", tpl, p.Config.IsAtALL, mobiles...)
+		err = newWebhook.SendMarkdownMsg(p.Config.TipsTitle, tpl, p.Config.IsAtALL, mobiles...)
 	case "text":
 		err = newWebhook.SendTextMsg(tpl, p.Config.IsAtALL, mobiles...)
 	case "link":
@@ -225,7 +231,6 @@ func (p *Plugin) getTpl() (tpl string, err error) {
 
 		tpl = string(tplStr)
 	}
-
 
 	return tpl, nil
 }
