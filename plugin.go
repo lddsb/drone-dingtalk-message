@@ -52,6 +52,7 @@ type (
 		Mobiles     string
 		Username    string
 		MsgType     string
+		TipsTitle   string
 	}
 
 	// MessageConfig `DingTalk message struct`
@@ -108,11 +109,15 @@ func (p *Plugin) Exec() error {
 		return errors.New("commit sha cannot short than 6")
 	}
 
+	if p.Config.TipsTitle == "" {
+		p.Config.TipsTitle = "you have a new message"
+	}
+
 	newWebhook := webhook.NewWebHook(p.Config.AccessToken)
 	mobiles := strings.Split(p.Config.Mobiles, ",")
 	switch strings.ToLower(p.Config.MsgType) {
 	case "markdown":
-		err = newWebhook.SendMarkdownMsg("You have a new message...", p.baseTpl(), p.Config.IsAtALL, mobiles...)
+		err = newWebhook.SendMarkdownMsg(p.Config.TipsTitle, p.baseTpl(), p.Config.IsAtALL, mobiles...)
 	case "text":
 		err = newWebhook.SendTextMsg(p.baseTpl(), p.Config.IsAtALL, mobiles...)
 	case "link":

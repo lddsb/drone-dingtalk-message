@@ -36,6 +36,10 @@ String. Access token for group bot. (you can get the access token when you add a
 
 String. Message type, plan support text, markdown, link and action card, but due to time issue, it's only support `markdown` and `text` now, and you can get the best experience by use markdown.
 
+`tips_title`
+
+String. You can customize the title for the message tips, just work when message type is markdown.
+
 `message_color`(when `type=markdown`)
 
 Boolean value. This option can change the title and commit message color if turn on.

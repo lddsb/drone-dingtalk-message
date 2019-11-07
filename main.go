@@ -144,6 +144,11 @@ func main() {
 			Usage:  "link sha source page or not",
 			EnvVar: "PLUGIN_SHA_LINK,PLUGIN_MESSAGE_SHA_LINK",
 		},
+		cli.StringFlag{
+			Name:   "config.tips.title",
+			Usage:  "tips title, just work for markdown type message",
+			EnvVar: "PLUGIN_TIPS_TITLE",
+		},
 	}
 
 	if err := app.Run(os.Args); nil != err {
@@ -184,10 +189,11 @@ func run(c *cli.Context) {
 		Config: Config{
 			AccessToken: c.String("config.token"),
 			//Lang:          c.String("config.lang"),
-			IsAtALL: c.Bool("config.message.at.all"),
-			MsgType: c.String("config.message.type"),
-			Mobiles: c.String("config.message.at.mobiles"),
-			Debug:   c.Bool("config.debug"),
+			IsAtALL:   c.Bool("config.message.at.all"),
+			MsgType:   c.String("config.message.type"),
+			Mobiles:   c.String("config.message.at.mobiles"),
+			Debug:     c.Bool("config.debug"),
+			TipsTitle: c.String("config.tips.title"),
 		},
 		Extra: Extra{
 			Pic: ExtraPic{
