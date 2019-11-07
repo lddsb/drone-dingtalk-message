@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/urfave/cli"
 	"log"
 	"os"
+
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/urfave/cli"
 )
 
 // Version of cli
@@ -29,6 +30,11 @@ func main() {
 			Name:   "config.debug",
 			Usage:  "debug mode",
 			EnvVar: "PLUGIN_DEBUG",
+		},
+		cli.StringFlag{
+			Name:   "config.tips.title",
+			Usage:  "customize the tips title",
+			EnvVar: "PLUGIN_TIPS_TITLE",
 		},
 		cli.StringFlag{
 			Name:   "config.token,access_token,token",
@@ -148,13 +154,13 @@ func main() {
 			EnvVar: "DRONE_BUILD_FINISHED",
 		},
 		cli.StringFlag{
-			Name: "tpl.build.status.success",
-			Usage: "tpl.build status for replace success",
+			Name:   "tpl.build.status.success",
+			Usage:  "tpl.build status for replace success",
 			EnvVar: "TPL_BUILD_STATUS_SUCCESS, PLUGIN_TPL_BUILD_STATUS_SUCCESS",
 		},
 		cli.StringFlag{
-			Name: "tpl.build.status.failure",
-			Usage: "tpl.build status for replace failure",
+			Name:   "tpl.build.status.failure",
+			Usage:  "tpl.build status for replace failure",
 			EnvVar: "TPL_BUILD_STATUS_FAILURE, PLUGIN_TPL_BUILD_STATUS_FAILURE",
 		},
 		cli.StringFlag{
@@ -183,18 +189,18 @@ func main() {
 			EnvVar: "PLUGIN_TPL,PLUGIN_CUSTOM_TPL",
 		},
 		cli.StringFlag{
-			Name: "tpl.repo.full.name",
-			Usage: "tpl custom repo full name",
+			Name:   "tpl.repo.full.name",
+			Usage:  "tpl custom repo full name",
 			EnvVar: "PLUGIN_TPL_REPO_FULL_NAME,TPL_REPO_FULL_NAME",
 		},
 		cli.StringFlag{
-			Name: "tpl.repo.short.name",
-			Usage: "tpl custom repo short name",
+			Name:   "tpl.repo.short.name",
+			Usage:  "tpl custom repo short name",
 			EnvVar: "PLUGIN_TPL_REPO_SHORT_NAME,TPL_REPO_SHORT_NAME",
 		},
 		cli.StringFlag{
-			Name: "tpl.commit.branch.name",
-			Usage: "tpl custom commit branch name",
+			Name:   "tpl.commit.branch.name",
+			Usage:  "tpl custom commit branch name",
 			EnvVar: "PLUGIN_TPL_COMMIT_BRANCH_NAME,TPL_COMMIT_BRANCH_NAME",
 		},
 	}
@@ -244,6 +250,7 @@ func run(c *cli.Context) {
 			MsgType:     c.String("config.message.type"),
 			Mobiles:     c.String("config.message.at.mobiles"),
 			Debug:       c.Bool("config.debug"),
+			TipsTitle:   c.String("config.tips.title"),
 		},
 		Custom: Custom{
 			Pic: Pic{
@@ -256,16 +263,16 @@ func run(c *cli.Context) {
 			},
 			Tpl: c.String("custom.tpl"),
 		},
-		Tpl:Tpl{
-			Repo:   TplRepo{
-				FullName: c.String("tpl.repo.full.name"),
+		Tpl: Tpl{
+			Repo: TplRepo{
+				FullName:  c.String("tpl.repo.full.name"),
 				ShortName: c.String("tpl.repo.short.name"),
 			},
 			Commit: TplCommit{
 				Branch: c.String("tpl.commit.branch.name"),
 			},
 			Build: TplBuild{
-				Status:Status{
+				Status: Status{
 					Success: c.String("tpl.build.status.success"),
 					Failure: c.String("tpl.build.status.failure"),
 				},
@@ -275,5 +282,6 @@ func run(c *cli.Context) {
 
 	if err := plugin.Exec(); nil != err {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 }
