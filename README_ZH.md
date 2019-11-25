@@ -1,8 +1,10 @@
-# Drone CI DingTalk Message Plugin
+# Drone CI的钉钉群组机器人通知插件
 [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/lddsb/drone-dingtalk-message)](https://hub.docker.com/r/lddsb/drone-dingtalk-message) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
-[中文说明](README_ZH.md)
-just support `text`, `markdown` and `link` type now
-### Drone CI Plugin Config
+
+目前仅支持 `text`, `markdown` 以及 `link` 类型的消息，建议使用`markdown`类型。
+### 怎么使用本插件
+添加一个`step`到你的`.drone.yml`中，下面是简单的例子：
+
 `0.8.x`
 ```yaml
 pipeline:
@@ -28,63 +30,63 @@ steps:
 
 ```
 
-### Plugin Parameter Reference
-`token`(required)
+### 插件参数
+`token`(必须)
 
-String. Access token for group bot. (you can get the access token when you add a bot in a group)
+你可以通过加入和创建一个群组来添加钉钉自定义机器人，添加自定义机器人完成后即可获得所需要的`access token`。
 
-`type`(required)
+`type`(必须)
 
-String. Message type, plan support text, markdown, link and action card, but due to time issue, it's only support `markdown` and `text` now, and you can get the best experience by use markdown.
+消息类型，因个人能力有限，目前仅支持`markdown`和`text`，其中，使用`markdown`可以获得最好的体验。
 
 `tpl`
 
-String. Your custom `tpl`, it can be a local path or a remote http link.
+你可以通过该字段来自定义你的消息模版。该字段可以是一个本地路径也可以是一个远程的URL。
 
 `tips_title`
 
-String. You can customize the title for the message tips, just work when message type is markdown.
+你可以通过该字段自定义钉钉机器人的消息通知提醒标题。（注意，不是消息内容的标题，是收到钉钉机器人发的消息后，会有一个外显的标题）
 
 `success_color`
 
-String. You can customize the color for the `build success` message by this option, you should input a hex color, example: `008000`.
+你可以通过该字段自定义打包成功的颜色。比如：`008000`。
 
 `failure_color`
 
-String. You can customize the color for the `build success` message by this option, you should input a hex color, example: `FF0000`.
+你可以通过该字段自定义打包失败的颜色。比如：`FF0000`。
 
 `success_pic`
 
-String. You can customize the picture for the `build success` message by this option.
+你可以通过该字段自定义打包成功的图片。
 
 `failure_pic`
 
-String. You can customize the picture for the `build failure` message by this option.
+字符串，你可以通过该字段自定义打包失败的图片。
 
 `tpl_commit_branch_name`
 
-String. You can customize the [TPL_COMMIT_BRANCH] by this configuration item.
+你可以通过该字段自定义分支的名称，可以在模版中通过[TPL_COMMIT_BRANCH]来使用该值。
 
 `tpl_repo_short_name`
 
-String. You can customize the [TPL_REPO_SHORT_NAME] by this configuration item.
+你可以通过该字段自定义仓库的名字，可以在模版中通过[TPL_REPO_SHORT_NAME]来使用该值。
 
 `tpl_repo_full_name`
 
-String. You can customize the [TPL_REPO_FULL_NAME] by this configuration item.
+你可以通过该字段自定义仓库的全名（包含组织名称），可以在模版中通过[TPL_REPO_FULL_NAME]来使用该值。
 
 `tpl_build_status_success`
 
-String. You can customize the [TPL_BUILD_STATUS] (when status=`success`) by this configuration item.
+你可以通过该字段自定义运行成功状态的值，可以在模版中通过[TPL_BUILD_STATUS]来使用该值。（仅当前方`step`运行结果为成功时该值会生效）
 
 `tpl_build_status_failure`
 
-String. You can customize the [TPL_BUILD_STATUS] (when status=`failure`) by this configuration item.
+你可以通过该字段自定义运行失败状态的值，可以在模版中通过[TPL_BUILD_STATUS]来使用该值。（仅当前方`step`运行结果为失败时该值会生效）
 
-### TPL
-> `tpl` won't work with message type `link` !!!
+### 模版
+> `tpl` 对 `link` 类型的消息并不支持 !!!
 
-That's a good news, we support `tpl` now.This is a example for `markdown` message:
+感天动地，我们终于支持自定义模版了！下面是一个`markdown`的自定义模版例子：
 
 	# [TPL_REPO_FULL_NAME] build [TPL_BUILD_STATUS], takes [TPL_BUILD_CONSUMING]s
 	[TPL_COMMIT_MSG]
@@ -94,7 +96,8 @@ That's a good news, we support `tpl` now.This is a example for `markdown` messag
 	[[TPL_AUTHOR_NAME]([TPL_AUTHOR_EMAIL])](mailto:[TPL_AUTHOR_EMAIL])
 
 	[Click To The Build Detail Page [TPL_STATUS_EMOTICON)]]([TPL_BUILD_LINK])
-You can write your own `tpl` what you want. The syntax of	`tpl` is very simple, you can fill `tpl` with preset variables. It's a list of currently supported preset variables:
+
+你可以写自己喜欢的模版，终于不用再对着默认模版发愁啦！并且模版的语法非常简单！比较可惜的是目前支持的变量还比较少，下面是当前支持的变量的列表：
 
 |       Variable        |                        Value                        |
 | :-------------------: | :-------------------------------------------------: |
@@ -122,47 +125,47 @@ You can write your own `tpl` what you want. The syntax of	`tpl` is very simple, 
 
 
 
-### Screen Shot
-- Send Success
+### 截图展示
+- 发送成功（Drone Web）
 
 ![send-success](https://i.imgur.com/cECppkW.jpg)
 
-- Missing Access Token
+- 忘记填写Access Token（Drone Web）
 
 ![missing-access-token](https://i.imgur.com/Su7iiyw.jpg)
 
-- Missing Message Type Or Not Support Message Type
+- 忘记填写消息类型或者不支持的消息类型
 
 ![message-type-error](https://i.imgur.com/qtJ4DsA.jpg)
 
-- Markdown DingTalk Message(default)
+- 默认的`markdown`消息
 
 ![markdown-message-default](https://i.imgur.com/Bl7cT1y.jpg)
 
-- Markdown DingTalk Message(color and sha link)
+- 带颜色和链接的`markdown`消息
 
 ![markdown-massage-customize](https://i.imgur.com/pzdFzIw.jpg)
 
-- Markdown DingTalk Message(color, pic and sha link)
+- 带颜色、链接和图片的`markdown`消息
 
 ![markdown-massage-customize](https://i.imgur.com/xFrCTZp.jpg)
 
 
-### Development
-We use `go mod` to manage dependencies, so it's easy to build.
+### 贡献代码
+本项目使用了`go mod`来管理依赖，因此要编译本项目相当简单。
 
-- get this repo
+- 先把项目代码拷贝到本地
 ```shell
 $ git clone https://github.com/lddsb/drone-dingtalk-message.git /path/to/you/want
 ```
-- build
+- 然后直接执行编译即可
 ```shell
 $ cd /path/to/you/want && GO111MODULE=on go build .
 ```
-- run
+- 跑个`help`
 ```shell
 $ ./drone-dingtalk-message -h
 ```
 
-### Todo
-- implement all message type
+### 待办
+- 实现更多的消息类型
