@@ -1,6 +1,8 @@
 # Drone CI DingTalk Message Plugin
 [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/lddsb/drone-dingtalk-message)](https://hub.docker.com/r/lddsb/drone-dingtalk-message) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
+
 [中文说明](README_ZH.md)
+
 just support `text`, `markdown` and `link` type now
 ### Drone CI Plugin Config
 `0.8.x`
