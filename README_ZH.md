@@ -27,6 +27,7 @@ steps:
   settings:
     token: your-groupbot-token
     type: markdown
+    secret: your-secret-for-generate-sign
 
 ```
 
@@ -38,6 +39,10 @@ steps:
 `type`(必须)
 
 消息类型，因个人能力有限，目前仅支持`markdown`和`text`，其中，使用`markdown`可以获得最好的体验。
+
+`secret`
+
+如果你设置了`加签`，可以把你的`加签`密钥填入此项完成`加签`操作。
 
 `tpl`
 

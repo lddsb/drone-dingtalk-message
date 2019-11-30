@@ -62,6 +62,7 @@ type (
 	Config struct {
 		Debug       bool
 		AccessToken string
+		Secret      string
 		IsAtALL     bool
 		Mobiles     string
 		Username    string
@@ -134,11 +135,11 @@ type (
 	}
 )
 
-// Exec execute webhook
+// Exec execute WebHook
 func (p *Plugin) Exec() error {
 	var err error
-	if 0 == len(p.Config.AccessToken) {
-		msg := "missing dingtalk access token"
+	if "" == p.Config.AccessToken {
+		msg := "missing DingTalk access token"
 		return errors.New(msg)
 	}
 
@@ -151,15 +152,21 @@ func (p *Plugin) Exec() error {
 		p.Config.TipsTitle = "you have a new message"
 	}
 
-	newWebhook := webhook.NewWebHook(p.Config.AccessToken)
+	newWebHook := webhook.NewWebHook(p.Config.AccessToken)
+
+	// add sign
+	if "" != p.Config.Secret {
+		newWebHook.Secret = p.Config.Secret
+	}
+
 	mobiles := strings.Split(p.Config.Mobiles, ",")
 	switch strings.ToLower(p.Config.MsgType) {
 	case "markdown":
-		err = newWebhook.SendMarkdownMsg(p.Config.TipsTitle, tpl, p.Config.IsAtALL, mobiles...)
+		err = newWebHook.SendMarkdownMsg(p.Config.TipsTitle, tpl, p.Config.IsAtALL, mobiles...)
 	case "text":
-		err = newWebhook.SendTextMsg(tpl, p.Config.IsAtALL, mobiles...)
+		err = newWebHook.SendTextMsg(tpl, p.Config.IsAtALL, mobiles...)
 	case "link":
-		err = newWebhook.SendLinkMsg(p.Drone.Build.Status, tpl, p.Drone.Commit.Author.Avatar, p.Drone.Build.Link)
+		err = newWebHook.SendLinkMsg(p.Drone.Build.Status, tpl, p.Drone.Commit.Author.Avatar, p.Drone.Build.Link)
 	default:
 		msg := "not support message type"
 		err = errors.New(msg)
