@@ -27,6 +27,7 @@ steps:
   settings:
     token: your-groupbot-token
     type: markdown
+    secret: your-secret-for-generate-sign
 
 ```
 
@@ -38,6 +39,10 @@ String. Access token for group bot. (you can get the access token when you add a
 `type`(required)
 
 String. Message type, plan support text, markdown, link and action card, but due to time issue, it's only support `markdown` and `text` now, and you can get the best experience by use markdown.
+
+`secret`
+
+String. Secret for generate sign.
 
 `tpl`
 

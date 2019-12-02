@@ -10,12 +10,12 @@ import (
 )
 
 // Version of cli
-var Version = "0.1.1202"
+var Version = "0.2.1130"
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "Drone Dingtalk Message Plugin"
-	app.Usage = "Sending message to Dingtalk group by robot using webhook"
+	app.Name = "Drone DingTalk Message Plugin"
+	app.Usage = "Sending message to DingTalk group by robot using WebHook"
 	app.Copyright = "© 2018 Dee Luo"
 	app.Authors = []cli.Author{
 		{
@@ -38,12 +38,17 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:   "config.token,access_token,token",
-			Usage:  "dingtalk webhook access token",
+			Usage:  "DingTalk webhook access token",
 			EnvVar: "PLUGIN_ACCESS_TOKEN,PLUGIN_TOKEN",
 		},
 		cli.StringFlag{
+			Name:   "config.secret,secret",
+			Usage:  "DingTalk WebHook secret for generate sign",
+			EnvVar: "PLUGIN_SECRET",
+		},
+		cli.StringFlag{
 			Name:   "config.message.type,message_type",
-			Usage:  "dingtalk message type, like text, markdown, action card, link and feed card...",
+			Usage:  "DingTalk message type, like text, markdown, action card, link and feed card...",
 			EnvVar: "PLUGIN_MSG_TYPE,PLUGIN_TYPE,PLUGIN_MESSAGE_TYPE",
 		},
 		cli.StringFlag{
@@ -53,7 +58,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:   "config.message.at.mobiles",
-			Usage:  "at someone in a dingtalk group need this guy bind's mobile",
+			Usage:  "at someone in a DingTalk group need this guy bind's mobile",
 			EnvVar: "PLUGIN_MSG_AT_MOBILES",
 		},
 		cli.StringFlag{
@@ -246,6 +251,7 @@ func run(c *cli.Context) {
 		//  custom config
 		Config: Config{
 			AccessToken: c.String("config.token"),
+			Secret:      c.String("config.secret"),
 			IsAtALL:     c.Bool("config.message.at.all"),
 			MsgType:     c.String("config.message.type"),
 			Mobiles:     c.String("config.message.at.mobiles"),
