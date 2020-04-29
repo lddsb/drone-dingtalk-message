@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 	"github.com/urfave/cli"
 )
 
@@ -149,6 +149,11 @@ func main() {
 			Usage:  "tips title, just work for markdown type message",
 			EnvVar: "PLUGIN_TIPS_TITLE",
 		},
+	}
+
+	// patch for k8s missing env
+	if _, err := os.Stat("/run/drone/env"); err == nil {
+		godotenv.Overload("/run/drone/env")
 	}
 
 	if err := app.Run(os.Args); nil != err {
