@@ -1,9 +1,20 @@
 # Drone CI的钉钉群组机器人通知插件
 [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/lddsb/drone-dingtalk-message)](https://hub.docker.com/r/lddsb/drone-dingtalk-message) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=lddsb/drone-dingtalk-message&identifier=159822771)](https://app.dependabot.com/accounts/lddsb/repos/159822771) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
 
-目前仅支持 `text`, `markdown` 以及 `link` 类型的消息，建议使用`markdown`类型。
+<!-- toc -->
+
+- [怎么使用本插件](#%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8%E6%9C%AC%E6%8F%92%E4%BB%B6)
+- [插件参数](#%E6%8F%92%E4%BB%B6%E5%8F%82%E6%95%B0)
+- [模版](#%E6%A8%A1%E7%89%88)
+- [截图展示](#%E6%88%AA%E5%9B%BE%E5%B1%95%E7%A4%BA)
+- [贡献代码](#%E8%B4%A1%E7%8C%AE%E4%BB%A3%E7%A0%81)
+- [未来计划](#%E6%9C%AA%E6%9D%A5%E8%AE%A1%E5%88%92)
+- [Kubernetes 用户请注意](#kubernetes-%E7%94%A8%E6%88%B7%E8%AF%B7%E6%B3%A8%E6%84%8F)
+
+<!-- tocstop -->
+
 ### 怎么使用本插件
-添加一个`step`到你的`.drone.yml`中，下面是简单的例子：
+添加一个`step`到你的`.drone.yml`中，下面是例子：
 
 `0.8.x`
 ```yaml
@@ -15,7 +26,7 @@ pipeline:
     type: markdown
 ```
 
-`1.0.x`
+`1.x`
 ```yaml
 kind: pipeline
 name: default
@@ -102,31 +113,31 @@ steps:
 
 	[Click To The Build Detail Page [TPL_STATUS_EMOTICON)]]([TPL_BUILD_LINK])
 
-你可以写自己喜欢的模版，终于不用再对着默认模版发愁啦！并且模版的语法非常简单！比较可惜的是目前支持的变量还比较少，下面是当前支持的变量的列表：
+你可以写自己喜欢的模版，终于不用再对默认模版发愁啦！并且模版的语法非常简单！比较可惜的是目前支持的变量还比较少，下面是当前支持的变量的列表：
 
 |       Variable        |                        Value                        |
 | :-------------------: | :-------------------------------------------------: |
-| [TPL_REPO_SHORT_NAME] |            current repo name(bare name)             |
-| [TPL_REPO_FULL_NAME]  |   the full name(with group name) of current repo    |
-| [TPL_REPO_GROUP_NAME] |           the group name of current repo            |
-| [TPL_REPO_OWNER_NAME] |           the owner name of current repo            |
-| [TPL_REPO_REMOTE_URL] |           the remote url of current repo            |
-|  [TPL_BUILD_STATUS]   |    current build status(e.g., success, failure)     |
-|   [TPL_BUILD_LINK]    |                 current build link                  |
-|   [TPL_BUILD_EVENT]   | current build event(e.g., push, pull request, etc.) |
-|  [TPL_BUILD_CONSUMING]  |    current build consuming, second     |
-|   [TPL_COMMIT_SHA]    |                 current commit sha                  |
-|   [TPL_COMMIT_REF]    |  current commit ref(e.g., refs/heads/master, etc.)  |
-|   [TPL_COMMIT_LINK]   |           current commit remote url link            |
-|  [TPL_COMMIT_BRANCH]  |         current branch name(e.g., dev, etc)         |
-|   [TPL_COMMIT_MSG]    |               current commit message                |
-|   [TPL_AUTHOR_NAME]   |             current commit author name              |
-|  [TPL_AUTHOR_EMAIL]   |             current commit author email             |
-| [TPL_AUTHOR_USERNAME] |           current commit author username            |
-|  [TPL_AUTHOR_AVATAR]  |            current commit author avatar             |
-|   [TPL_STATUS_PIC]    |             custom pic for build status             |
-|  [TPL_STATUS_COLOR]   |            custom color for build status            |
-| [TPL_STATUS_EMOTICON] |          custom emoticon for build status           |
+| [TPL_REPO_SHORT_NAME] |            当前仓库的名称，比如本仓库 `drone-dingtalk-message`             |
+| [TPL_REPO_FULL_NAME]  |   当前仓库的名称，比如本仓库 `lddsb/drone-dingtalk-message`    |
+| [TPL_REPO_GROUP_NAME] |           当前仓库的组织名称，比如本仓库 `lddsb`            |
+| [TPL_REPO_OWNER_NAME] |           当前仓库拥有者的名称            |
+| [TPL_REPO_REMOTE_URL] |           当前仓库的远程地址            |
+|  [TPL_BUILD_STATUS]   |    当前编译的状态(比如, success, failure)     |
+|   [TPL_BUILD_LINK]    |                 当前编译的链接                  |
+|   [TPL_BUILD_EVENT]   | 触发当前编译的动作(比如, push, pull request等) |
+|  [TPL_BUILD_CONSUMING]  |    当前编译耗时，单位秒     |
+|   [TPL_COMMIT_SHA]    |                 当前提交的sha                  |
+|   [TPL_COMMIT_REF]    |  当前提交的ref(比如, refs/heads/master等)  |
+|   [TPL_COMMIT_LINK]   |           当前提交的远程地址            |
+|  [TPL_COMMIT_BRANCH]  |         当前分之名称(比如, dev, master等)         |
+|   [TPL_COMMIT_MSG]    |               当前提交的信息                |
+|   [TPL_AUTHOR_NAME]   |             当前提交作者名称              |
+|  [TPL_AUTHOR_EMAIL]   |             当前提交作者邮箱地址             |
+| [TPL_AUTHOR_USERNAME] |           当前提交作者的用户名            |
+|  [TPL_AUTHOR_AVATAR]  |            当前提交作者的头像             |
+|   [TPL_STATUS_PIC]    |             根据编译状态显示不同的图片             |
+|  [TPL_STATUS_COLOR]   |            根据编译状态显示不同的颜色            |
+| [TPL_STATUS_EMOTICON] |          根据编译状态显示不同的表情，比如 `:)` `:(`           |
 
 
 
@@ -172,5 +183,13 @@ $ cd /path/to/you/want && GO111MODULE=on go build .
 $ ./drone-dingtalk-message -h
 ```
 
-### 待办
+### 未来计划
+目前仅支持 `text`, `markdown` 以及 `link` 类型的消息，建议使用`markdown`类型。
 - 实现更多的消息类型
+
+### Kubernetes 用户请注意
+因为`Drone CI` [官方缺陷](https://docs.drone.io/runner/kubernetes/overview) ，所以较早版本将无法正常获取到需要用到的变量，会导致部分功能异常。为了能正常使用，所以请使用以下版本：
+- `1.1`(总会是`1.1.x`的最新版本)
+- `>=1.1.4`
+- `1.2`(总会是`1.2.x`的最新版本)
+- `>=1.2.4`

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.4] - 2020-04-28
+### Fixed:
+* kubernetes runner missing env, [details](https://docs.drone.io/runner/kubernetes/overview)
+
 ## [1.2.3] - 2020-01-20
 ### Fixed:
 * CDN url of default image.
@@ -17,6 +21,10 @@
 ## [1.2.0] - 2019-09-24
 ### Added:
 * Support custom tpl.
+
+## [1.1.4] - 2020-04-28
+### Fixed:
+* kubernetes runner missing env, [details](https://docs.drone.io/runner/kubernetes/overview)
 
 ## [1.1.3] - 2020-01-20
 ### Fixed:
@@ -42,11 +50,13 @@
 ### Added:
 * Auto publish image to DockerHub.
 
-[Unreleased]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.1.0...v1.2.0
+[1.1.4]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.1.0...v1.1.1

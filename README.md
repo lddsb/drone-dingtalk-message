@@ -3,7 +3,18 @@
 
 [中文说明](README_ZH.md)
 
-just support `text`, `markdown` and `link` type now
+<!-- toc -->
+
+- [Drone CI Plugin Config](#drone-ci-plugin-config)
+- [Plugin Parameter Reference](#plugin-parameter-reference)
+- [TPL](#tpl)
+- [Screen Shot](#screen-shot)
+- [Development](#development)
+- [Todo](#todo)
+- [Kubernetes Users](#kubernetes-users)
+
+<!-- tocstop -->
+
 ### Drone CI Plugin Config
 `0.8.x`
 ```yaml
@@ -15,7 +26,7 @@ pipeline:
     type: markdown
 ```
 
-`1.0.x`
+`1.x`
 ```yaml
 kind: pipeline
 name: default
@@ -46,7 +57,7 @@ String. Secret for generate sign.
 
 `tpl`
 
-String. Your custom `tpl`, it can be a local path or a remote http link.
+String. Your custom `tpl`, it can be a local path, or a remote http link.
 
 `tips_title`
 
@@ -91,7 +102,7 @@ String. You can customize the [TPL_BUILD_STATUS] (when status=`failure`) by this
 ### TPL
 > `tpl` won't work with message type `link` !!!
 
-That's a good news, we support `tpl` now.This is a example for `markdown` message:
+That's a good news, we support `tpl` now.This is an example for `markdown` message:
 
 	# [TPL_REPO_FULL_NAME] build [TPL_BUILD_STATUS], takes [TPL_BUILD_CONSUMING]s
 	[TPL_COMMIT_MSG]
@@ -172,4 +183,14 @@ $ ./drone-dingtalk-message -h
 ```
 
 ### Todo
+It's sad, just support `text`, `markdown` and `link` type now.
 - implement all message type
+
+### Kubernetes Users
+Attention kubernetes users, [CHANGELOG](CHANGELOG.md#124---2020-04-28).It's the available versions:
+
+- `1.1`(always latest for `1.1.x`)
+- `>=1.1.4`
+- `1.2`(always latest for `1.2.x`)
+- `>=1.2.4`
+- latest(always latest)
