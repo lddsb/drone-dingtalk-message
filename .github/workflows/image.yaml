@@ -29,7 +29,7 @@ jobs:
             MINOR=${VERSION%.*}
             MAJOR=${MINOR%.*}
             TAGS="$TAGS,${DOCKER_IMAGE}:${MINOR},${DOCKER_IMAGE}:${MAJOR}"
-            TAGS="$TAG,${GITHUB_IMAGE}:${VERSION},${GITHUB_IMAGE}:${MINOR},${GITHUB_IMAGE}:${MAJOR}"
+            TAGS="$TAGS,${GITHUB_IMAGE}:${VERSION},${GITHUB_IMAGE}:${MINOR},${GITHUB_IMAGE}:${MAJOR}"
           fi
           echo ::set-output name=tags::${TAGS}
       - name: Setup Docker Buildx
