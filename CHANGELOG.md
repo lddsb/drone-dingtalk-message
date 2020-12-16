@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.2.5] - 2020-12-16
+### Added:
+* The TPL can use environment variables.
+* Debug mode.
+* Use GitHub Actions for automation.
+
 ## [1.2.4] - 2020-04-28
 ### Fixed:
 * kubernetes runner missing env, [details](https://docs.drone.io/runner/kubernetes/overview)
@@ -20,7 +26,7 @@
 
 ## [1.2.0] - 2019-09-24
 ### Added:
-* Support custom tpl.
+* Support custom TPL.
 
 ## [1.1.4] - 2020-04-28
 ### Fixed:
@@ -50,7 +56,8 @@
 ### Added:
 * Auto publish image to DockerHub.
 
-[Unreleased]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.5...HEAD
+[1.2.5]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.4...v1.2.5
 [1.2.4]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/lddsb/drone-dingtalk-message/compare/v1.2.1...v1.2.2

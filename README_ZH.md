@@ -1,5 +1,6 @@
 # Drone CI的钉钉群组机器人通知插件
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/lddsb/drone-dingtalk-message)](https://hub.docker.com/r/lddsb/drone-dingtalk-message) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=lddsb/drone-dingtalk-message&identifier=159822771)](https://app.dependabot.com/accounts/lddsb/repos/159822771) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
+[![GitHub Actions](https://github.com/lddsb/drone-dingtalk-message/workflows/Publish%20to%20DockerHub%20and%20Github%20Package/badge.svg)](https://github.com/lddsb/drone-dingtalk-message/actions?query=workflow%3A%22Publish+to+DockerHub+and+Github+Package%22) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=lddsb/drone-dingtalk-message&identifier=159822771)](https://app.dependabot.com/accounts/lddsb/repos/159822771) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
+
 
 <!-- toc -->
 
@@ -28,9 +29,6 @@ pipeline:
 
 `1.x`
 ```yaml
-kind: pipeline
-name: default
-
 steps:
 ...
 - name: notification
@@ -39,7 +37,7 @@ steps:
     token: your-groupbot-token
     type: markdown
     secret: your-secret-for-generate-sign
-
+    debug: true
 ```
 
 ### 插件参数
@@ -58,6 +56,10 @@ steps:
 `tpl`
 
 你可以通过该字段来自定义你的消息模版。该字段可以是一个本地路径也可以是一个远程的URL。
+
+`debug`
+
+通过该值可以打开`debug`模式，打印所有环境变量。
 
 `tips_title`
 
@@ -186,6 +188,9 @@ $ ./drone-dingtalk-message -h
 ### 未来计划
 目前仅支持 `text`, `markdown` 以及 `link` 类型的消息，建议使用`markdown`类型。
 - 实现更多的消息类型
+- i18N国际化直接翻译环境变量
+- 批量发送给多个群机器人
+- 失败重试机制
 
 ### Kubernetes 用户请注意
 因为`Drone CI` [官方缺陷](https://docs.drone.io/runner/kubernetes/overview) ，所以较早版本将无法正常获取到需要用到的变量，会导致部分功能异常。为了能正常使用，所以请使用以下版本：

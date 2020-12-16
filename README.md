@@ -1,5 +1,5 @@
 # Drone CI DingTalk Message Plugin
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/lddsb/drone-dingtalk-message)](https://hub.docker.com/r/lddsb/drone-dingtalk-message) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=lddsb/drone-dingtalk-message&identifier=159822771)](https://app.dependabot.com/accounts/lddsb/repos/159822771) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
+[![GitHub Actions](https://github.com/lddsb/drone-dingtalk-message/workflows/Publish%20to%20DockerHub%20and%20Github%20Package/badge.svg)](https://github.com/lddsb/drone-dingtalk-message/actions?query=workflow%3A%22Publish+to+DockerHub+and+Github+Package%22) [![Go Report Card](https://goreportcard.com/badge/github.com/lddsb/drone-dingtalk-message)](https://goreportcard.com/report/github.com/lddsb/drone-dingtalk-message) [![codecov](https://codecov.io/gh/lddsb/drone-dingtalk-message/branch/master/graph/badge.svg)](https://codecov.io/gh/lddsb/drone-dingtalk-message) [![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=lddsb/drone-dingtalk-message&identifier=159822771)](https://app.dependabot.com/accounts/lddsb/repos/159822771) [![LICENSE: MIT](https://img.shields.io/github/license/lddsb/drone-dingtalk-message.svg?style=flat-square)](LICENSE)
 
 [中文说明](README_ZH.md)
 
@@ -28,9 +28,6 @@ pipeline:
 
 `1.x`
 ```yaml
-kind: pipeline
-name: default
-
 steps:
 ...
 - name: notification
@@ -39,7 +36,7 @@ steps:
     token: your-groupbot-token
     type: markdown
     secret: your-secret-for-generate-sign
-
+    debug: true
 ```
 
 ### Plugin Parameter Reference
@@ -58,6 +55,9 @@ String. Secret for generate sign.
 `tpl`
 
 String. Your custom `tpl`, it can be a local path, or a remote http link.
+
+`debug`
+Boolean. Debug mode.
 
 `tips_title`
 
@@ -185,6 +185,9 @@ $ ./drone-dingtalk-message -h
 ### Todo
 It's sad, just support `text`, `markdown` and `link` type now.
 - implement all message type
+- i18N
+- batch send
+- retry(e.g., network error, etc.)
 
 ### Kubernetes Users
 Attention kubernetes users, [CHANGELOG](CHANGELOG.md#124---2020-04-28).It's the available versions:
