@@ -137,6 +137,12 @@ type (
 
 // Exec execute WebHook
 func (p *Plugin) Exec() error {
+	if p.Config.Debug {
+		for _, e := range os.Environ() {
+			log.Println(e)
+		}
+	}
+
 	var err error
 	if "" == p.Config.AccessToken {
 		msg := "missing DingTalk access token"
@@ -194,7 +200,7 @@ func fileExists(filePath string) bool {
 // getTpl get tpl from local file or remote file
 func (p *Plugin) getTpl() (tpl string, err error) {
 	//var tpl string
-	tplDir := "/app/tpls"
+	tplDir := "/app/drone/dingtalk/message/tpls"
 	if "" == p.Custom.Tpl {
 		p.Custom.Tpl = fmt.Sprintf("%s/%s.tpl", tplDir, strings.ToLower(p.Config.MsgType))
 	}
@@ -249,6 +255,11 @@ func (p *Plugin) fillTpl(tpl string) string {
 	reg := regexp.MustCompile(`\[([^\[\]]*)]`)
 	match := reg.FindAllStringSubmatch(tpl, -1)
 	for _, m := range match {
+		// from environment
+		if envStr := os.Getenv(m[1]); envStr != "" {
+			tpl = strings.ReplaceAll(tpl, m[0], envStr)
+		}
+
 		// check if the keyword is legal
 		if _, ok := envs[m[1]]; ok {
 			// replace keyword

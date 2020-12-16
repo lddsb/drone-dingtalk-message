@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli"
@@ -16,7 +17,8 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Drone DingTalk Message Plugin"
 	app.Usage = "Sending message to DingTalk group by robot using WebHook"
-	app.Copyright = "© 2018 Dee Luo"
+	year := time.Now().Year()
+	app.Copyright = fmt.Sprintf("© 2018-%d Dee Luo", year)
 	app.Authors = []cli.Author{
 		{
 			Name:  "Dee Luo",
