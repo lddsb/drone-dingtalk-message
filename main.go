@@ -11,7 +11,7 @@ import (
 )
 
 // Version of cli
-var Version = "0.2.1130"
+var Version = "0.2.1219"
 
 func main() {
 	app := cli.NewApp()
@@ -29,7 +29,7 @@ func main() {
 	app.Version = Version
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
-			Name:   "config.debug",
+			Name:   "config.debug,debug",
 			Usage:  "debug mode",
 			EnvVar: "PLUGIN_DEBUG",
 		},
@@ -49,17 +49,17 @@ func main() {
 			EnvVar: "PLUGIN_SECRET",
 		},
 		cli.StringFlag{
-			Name:   "config.message.type,message_type",
+			Name:   "config.message.type,message_type,type",
 			Usage:  "DingTalk message type, like text, markdown, action card, link and feed card...",
 			EnvVar: "PLUGIN_MSG_TYPE,PLUGIN_TYPE,PLUGIN_MESSAGE_TYPE",
 		},
 		cli.StringFlag{
-			Name:   "config.message.at.all",
+			Name:   "config.message.at.all,at.all",
 			Usage:  "at all in a message(only text and markdown type message can at)",
 			EnvVar: "PLUGIN_MSG_AT_ALL",
 		},
 		cli.StringFlag{
-			Name:   "config.message.at.mobiles",
+			Name:   "config.message.at.mobiles,mobiles",
 			Usage:  "at someone in a DingTalk group need this guy bind's mobile",
 			EnvVar: "PLUGIN_MSG_AT_MOBILES",
 		},
@@ -134,6 +134,16 @@ func main() {
 			Usage:  "provider the owner of the repository",
 			EnvVar: "DRONE_REPO_OWNER",
 		},
+		cli.Uint64Flag{
+			Name:   "stage.started",
+			Usage:  "stage started ",
+			EnvVar: "DRONE_STAGE_STARTED",
+		},
+		cli.Uint64Flag{
+			Name:   "stage.finished",
+			Usage:  "stage finished",
+			EnvVar: "DRONE_STAGE_FINISHED",
+		},
 		cli.StringFlag{
 			Name:   "build.status",
 			Usage:  "build status",
@@ -150,12 +160,12 @@ func main() {
 			Usage:  "build event",
 			EnvVar: "DRONE_BUILD_EVENT",
 		},
-		cli.StringFlag{
+		cli.Uint64Flag{
 			Name:   "build.started",
 			Usage:  "build started",
 			EnvVar: "DRONE_BUILD_STARTED",
 		},
-		cli.StringFlag{
+		cli.Uint64Flag{
 			Name:   "build.finished",
 			Usage:  "build finished",
 			EnvVar: "DRONE_BUILD_FINISHED",
@@ -191,7 +201,7 @@ func main() {
 			EnvVar: "FAILURE_COLOR,PLUGIN_FAILURE_COLOR",
 		},
 		cli.StringFlag{
-			Name:   "custom.tpl",
+			Name:   "custom.tpl,tpl",
 			Usage:  "custom tpl",
 			EnvVar: "PLUGIN_TPL,PLUGIN_CUSTOM_TPL",
 		},
@@ -209,6 +219,16 @@ func main() {
 			Name:   "tpl.commit.branch.name",
 			Usage:  "tpl custom commit branch name",
 			EnvVar: "PLUGIN_TPL_COMMIT_BRANCH_NAME,TPL_COMMIT_BRANCH_NAME",
+		},
+		cli.StringFlag{
+			Name:   "custom.started,started",
+			Usage:  "started custom env name, eg., BUILD_STARTED",
+			EnvVar: "PLUGIN_CUSTOM_STARTED",
+		},
+		cli.StringFlag{
+			Name:   "custom.finished,finished",
+			Usage:  "finished custom env name, eg., BUILD_FINISHED",
+			EnvVar: "PLUGIN_CUSTOM_FINISHED",
 		},
 	}
 
@@ -239,8 +259,8 @@ func run(c *cli.Context) {
 				Status:     c.String("build.status"),
 				Link:       c.String("build.link"),
 				Event:      c.String("build.event"),
-				StartAt:    c.Int64("build.started"),
-				FinishedAt: c.Int64("build.finished"),
+				StartAt:    c.Uint64("build.started"),
+				FinishedAt: c.Uint64("build.finished"),
 			},
 			Commit: Commit{
 				Sha:     c.String("commit.sha"),
@@ -253,6 +273,10 @@ func run(c *cli.Context) {
 					Name:     c.String("commit.author.name"),
 					Username: c.String("commit.author.username"),
 				},
+			},
+			Stage: Stage{
+				StartedAt:  c.Uint64("stage.started"),
+				FinishedAt: c.Uint64("stage.finished"),
 			},
 		},
 		//  custom config
@@ -275,6 +299,10 @@ func run(c *cli.Context) {
 				FailureColor: c.String("custom.color.failure"),
 			},
 			Tpl: c.String("custom.tpl"),
+			Consuming: Consuming{
+				StartedEnv:  c.String("custom.started"),
+				FinishedEnv: c.String("custom.finished"),
+			},
 		},
 		Tpl: Tpl{
 			Repo: TplRepo{
