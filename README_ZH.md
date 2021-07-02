@@ -101,12 +101,17 @@ steps:
 
 你可以通过该字段自定义运行失败状态的值，可以在模版中通过[TPL_BUILD_STATUS]来使用该值。（仅当前方`step`运行结果为失败时该值会生效）
 
+`msg_at_mobiles`
+
+你需要@的群成员的手机号，多个时用英文逗号(`,`)分隔。如过你使用的是 `markdown` 类型的消息，则需要在 `tpl` 文件中加入 `@手机号` 的内容。
+
 ### 模版
 > `tpl` 对 `link` 类型的消息并不支持 !!!
 
 感天动地，我们终于支持自定义模版了！下面是一个`markdown`的自定义模版例子：
 
 	# [TPL_REPO_FULL_NAME] build [TPL_BUILD_STATUS], takes [TPL_BUILD_CONSUMING]s
+    @mobile1 @mobile2
 	[TPL_COMMIT_MSG]
 
 	[TPL_COMMIT_SHA]([TPL_COMMIT_LINK])
@@ -114,6 +119,8 @@ steps:
 	[[TPL_AUTHOR_NAME]([TPL_AUTHOR_EMAIL])](mailto:[TPL_AUTHOR_EMAIL])
 
 	[Click To The Build Detail Page [TPL_STATUS_EMOTICON)]]([TPL_BUILD_LINK])
+
+`mobile1` 和 `mobile2` 应该为钉钉对应的手机号码，可以放在自己想要放的位置。
 
 你可以写自己喜欢的模版，终于不用再对默认模版发愁啦！并且模版的语法非常简单！比较可惜的是目前支持的变量还比较少，下面是当前支持的变量的列表：
 

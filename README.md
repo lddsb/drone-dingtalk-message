@@ -99,12 +99,17 @@ String. You can customize the [TPL_BUILD_STATUS] (when status=`success`) by this
 
 String. You can customize the [TPL_BUILD_STATUS] (when status=`failure`) by this configuration item.
 
+`msg_at_mobiles`
+
+String. You want at's phone number in the group, if you need at multi phone numbers, you can use `,` to separate. (if you use markdown type, you need define the at content in your tpl file)
+
 ### TPL
 > `tpl` won't work with message type `link` !!!
 
 That's a good news, we support `tpl` now.This is an example for `markdown` message:
 
 	# [TPL_REPO_FULL_NAME] build [TPL_BUILD_STATUS], takes [TPL_BUILD_CONSUMING]s
+    @mobile1 @mobile2
 	[TPL_COMMIT_MSG]
 
 	[TPL_COMMIT_SHA]([TPL_COMMIT_LINK])
