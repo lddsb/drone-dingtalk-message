@@ -25,7 +25,7 @@ type (
 		RemoteURL string //  repo remote url
 	}
 
-	// Build build info
+	// Build info
 	Build struct {
 		Status     string //  providers the current build status
 		Link       string //  providers the current build link
@@ -34,7 +34,7 @@ type (
 		FinishedAt uint64 //  build finish at ( unix timestamp )
 	}
 
-	// Commit commit info
+	// Commit info
 	Commit struct {
 		Branch  string //  providers the branch for the current commit
 		Link    string //  providers the http link to the current commit in the remote source code management system(e.g.GitHub)
@@ -120,7 +120,7 @@ type (
 		Consuming Consuming
 	}
 
-	// Tpl TPL base
+	// Tpl base
 	Tpl struct {
 		Repo   TplRepo
 		Commit TplCommit
@@ -255,7 +255,8 @@ func (p *Plugin) getTpl() (tpl string, err error) {
 		tpl = string(body)
 	} else {
 		if !fileExists(p.Custom.Tpl) {
-			return "", errors.New("tpl file not exists")
+			// it must be a tpl stream
+			return p.Custom.Tpl, nil
 		}
 
 		tplStr, err := ioutil.ReadFile(p.Custom.Tpl)
