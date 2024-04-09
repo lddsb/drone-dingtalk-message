@@ -40,6 +40,25 @@ steps:
     debug: true
 ```
 
+`命令行版本`
+```yaml
+kind: pipeline
+type: exec
+
+steps:
+...
+
+- name: 通知
+  environment:  # 使用 environment 传递参数
+    PLUGIN_TOKEN:
+      from_secret: dingtalk_token
+    PLUGIN_TYPE: markdown
+    PLUGIN_DEBUG: false
+    PLUGIN_TPL: /data/drone/dingtalk/tpls/markdown.tpl  # tpl 的实际位置（绝对路径）
+  commands:
+    - /data/drone/dingtalk/dingtalk-message   # dingtalk-message 文件的位置（绝对路径）
+```
+
 ### 插件参数
 `token`(必须)
 

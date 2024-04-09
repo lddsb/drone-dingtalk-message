@@ -39,6 +39,25 @@ steps:
     debug: true
 ```
 
+`Use the "exec" type`
+```yaml
+kind: pipeline
+type: exec
+
+steps:
+...
+
+- name: notification
+  environment:  # Using environment to pass parameters
+    PLUGIN_TOKEN:
+      from_secret: dingtalk_token
+    PLUGIN_TYPE: markdown
+    PLUGIN_DEBUG: false
+    PLUGIN_TPL: /data/drone/dingtalk/tpls/markdown.tpl  # The actual location (absolute path) of the tpl.
+  commands:
+    - /data/drone/dingtalk/dingtalk-message   # Location of the "dingtalk-message" file (absolute path)
+```
+
 ### Plugin Parameter Reference
 `token`(required)
 
