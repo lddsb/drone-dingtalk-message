@@ -19,7 +19,7 @@
 `0.8.x`
 ```yaml
 pipeline:
-  ...
+  #...
   notification:
     image: lddsb/drone-dingtalk-message
     token: your-group-bot-token
@@ -29,7 +29,7 @@ pipeline:
 `1.x`
 ```yaml
 steps:
-...
+#...
 - name: notification
   image: lddsb/drone-dingtalk-message
   settings:
@@ -206,7 +206,7 @@ $ cd /path/to/you/want && GO111MODULE=on go build .
 $ ./drone-dingtalk-message -h
 ```
 
-### Todo
+### TODO
 It's sad, just support `text`, `markdown` and `link` type now.
 - implement all message type
 - i18N
