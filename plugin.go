@@ -415,13 +415,19 @@ func (p *Plugin) getColor() string {
 	//  success color
 	colors["success"] = "#008000"
 	if p.Custom.Color.SuccessColor != "" {
-		colors["success"] = "#" + p.Custom.Color.SuccessColor
+		if p.Custom.Color.SuccessColor[0] != '#' {
+			p.Custom.Color.SuccessColor = "#" + p.Custom.Color.SuccessColor
+		}
+		colors["success"] = p.Custom.Color.SuccessColor
 	}
 
 	//  failure color
 	colors["failure"] = "#FF0000"
 	if p.Custom.Color.FailureColor != "" {
-		colors["failure"] = "#" + p.Custom.Color.FailureColor
+		if p.Custom.Color.FailureColor[0] != '#' {
+			p.Custom.Color.FailureColor = "#" + p.Custom.Color.FailureColor
+		}
+		colors["failure"] = p.Custom.Color.FailureColor
 	}
 
 	color, ok := colors[p.Drone.Build.Status]
